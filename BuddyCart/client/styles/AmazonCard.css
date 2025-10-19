@@ -1,0 +1,193 @@
+.amazon-cards {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  justify-items: center;
+  align-items: stretch;
+}
+
+
+:root {
+  --card-bg: #fff;
+  --card-radius: 14px;
+  --card-shadow: 0 8px 26px rgba(17, 24, 39, 0.08);
+  --card-shadow-hover: 0 12px 34px rgba(17, 24, 39, 0.16);
+  --text-color: #111827;
+  --muted-color: #6b7280;
+  --link-color: #2563eb;
+  --card-ring: #e5e7eb;          
+}
+
+
+.amazon-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+
+  width: 100%;
+  max-width: 340px;              
+  display: flex;
+  flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  border: 1px solid var(--card-ring); 
+}
+
+.amazon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: #d1d5db;        
+}
+
+
+.amazon-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;          
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(37, 99, 235, .06), transparent 60%),
+    #f3f4f6;
+  display: grid;
+  place-items: center;
+}
+
+.amazon-card-media img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;           
+  transform: translateZ(0);
+  transition: transform .25s ease;
+}
+.amazon-card:hover .amazon-card-media img { transform: scale(1.02); }
+
+
+.amazon-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;                   
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+
+.amazon-card-body { padding: 14px 16px 18px; }
+
+.amazon-card-eyebrow {
+  color: var(--muted-color);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin: 0 0 6px;
+}
+
+.amazon-card-title {
+  font-size: 18px;
+  line-height: 1.35;
+  color: var(--text-color);
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+.amazon-card-link,
+.amazon-card-action,
+.amazon-card-button {
+  color: var(--link-color);
+  font-weight: 700;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 0;
+}
+.amazon-card-link:hover,
+.amazon-card-action:hover,
+.amazon-card-button:hover { text-decoration: underline; }
+
+
+@media (max-width: 420px) {
+  .amazon-card { max-width: 100%; }
+}
+
+
+.amazon-cards--spotlight {
+  position: relative;
+  padding: 20px;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(37,99,235,.06), transparent 55%),
+    radial-gradient(120% 100% at 100% 0%, rgba(99,102,241,.06), transparent 55%),
+    #ffffff;
+  box-shadow: 0 12px 36px rgba(15,17,17,.08);
+  border: 1px solid #e5e7eb;
+}
+
+
+.amazon-cards--spotlight::before {
+  content: "Weather picks";
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .4px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.amazon-card--spotlight {
+  border-color: #dfe3e6;                   
+  box-shadow: 0 10px 28px rgba(17,24,39,.12);
+  transform: translateZ(0);                
+}
+
+
+.amazon-card--spotlight .amazon-card-media {
+  background:
+    radial-gradient(130% 100% at 50% -10%, rgba(37,99,235,.10), transparent 60%),
+    #f3f4f6;
+}
+
+
+.amazon-card--spotlight:hover {
+  box-shadow: 0 14px 40px rgba(17,24,39,.18);
+  border-color: #cbd5e1;                 
+}
+.amazon-card--spotlight::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--card-radius) + 2px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(37,99,235,.18), transparent 70%),
+    radial-gradient(60% 50% at 50% 100%, rgba(99,102,241,.14), transparent 70%);
+}
+.amazon-card--spotlight:hover::after { opacity: 1; }
+
+
+.amazon-card--spotlight .amazon-card-title {
+  font-size: 19px;
+}
+
+
+.section-below-dim .list-card,
+.section-below-dim .product-card {
+  box-shadow: 0 2px 8px rgba(17,24,39,.06) !important;
+  border-color: #eef2f5 !important;
+}
+
+@media (min-width: 1024px) {
+  .amazon-cards { gap: 24px; }
+}

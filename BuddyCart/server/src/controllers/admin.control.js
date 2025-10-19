@@ -6,8 +6,8 @@ const {Product}=require("../models/Product.model");
 
 const syncProducts=async (req,res,next)=>{
     try {
-        const limit=parseInt(req.query.limit || '180');
-        const skip=parseInt(req.query.skip || '180');
+        const limit=parseInt(req.query.limit || '190');
+        const skip=parseInt(req.query.skip || '0');
 
         const {products=[]}= await getProducts(limit,skip);
         if(!products.length){return res.status(200).json({message:"No products from API,PLEASE CHECK."})}
