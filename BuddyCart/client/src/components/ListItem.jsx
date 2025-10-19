@@ -11,36 +11,24 @@ const ListItem = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const { items, setItems } = useItems();
-  const { addToCart } = useCart();
-  const { role, toggleRole } = useUser();
+  const {items, setItems } = useItems();
+  const {addToCart } = useCart();
+  const {role, toggleRole } = useUser();
 
-  const max_total = 190;
   const totalPages = Math.max(Math.ceil(total / limit), 1);
 
   useEffect(() => {
     let ignore = false;
     const fetchItems = async () => {
       try {
-        setLoading(true);
-        const skip = (page - 1) * limit;
-        const remaining = Math.max(0, max_total - skip);
-        if (remaining <= 0) {
-          if (!ignore) {
-            setItems([]);
-            setTotal(0);
-          }
-          return;
-        }
-        const effectiveLimit = Math.min(limit, remaining);
-
+        setLoading(true);      
         const { data } = await axios.get(
-          `https://dummyjson.com/products/?limit=${effectiveLimit}&skip=${skip}`
+          `/api/products`,{params:{page,limit}}
         );
 
         if (!ignore) {
           setItems(data.products);
-          setTotal(Math.min(data.total, max_total));
+          setTotal(data.total);
         }
       } catch (error) {
         console.error(error);
@@ -52,13 +40,13 @@ const ListItem = () => {
     return () => {
       ignore = true;
     };
-  }, [page, limit, setItems]);
+  }, [page, limit]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      await axios.delete(`https://dummyjson.com/products/${id}`);
-      setItems((prev) => prev.filter((p) => p.id !== id));
+      await axios.delete(`/api/beta1/admin/products/${id}`);
+      setItems((prev) => prev.filter((p) => (p._id||p.id) !== id));
       setTotal((t) => Math.max(t - 1, 0));
     } catch (err) {
       console.error(err);
@@ -130,7 +118,7 @@ const ListItem = () => {
         >
           {items.map((item) => (
             <div
-              key={item.id}
+              key={item._id||item.id}
               style={{
                 backgroundColor: "#fff",
                 borderRadius: "10px",
@@ -152,7 +140,7 @@ const ListItem = () => {
               }}
             >
               <Link
-                to={`/items/${item.id}`}
+                to={`/items/${item._id||item.id}`}
                 style={{
                   textDecoration: "none",
                   color: "inherit",
@@ -199,7 +187,7 @@ const ListItem = () => {
                     margin: "4px 0 0 0",
                   }}
                 >
-                  ${Number(item.price).toFixed(2)}
+                  ${Number.isFinite(Number(item.price)) ? Number(item.price).toFixed(2) : '--'}
                 </p>
               </Link>
 
@@ -224,10 +212,10 @@ const ListItem = () => {
                 </button>
 
                 {/* 管理员可见 */}
-                {role === "admin" && (
+                {role==="admin" && (
                   <>
                     <Link
-                      to={`/items/${item.id}/edit`}
+                      to={`/items/${item._id||item.id}/edit`}
                       style={{
                         padding: "6px 10px",
                         border: "1px solid #ddd",
@@ -240,7 +228,7 @@ const ListItem = () => {
                     </Link>
 
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item._id||item.id)}
                       style={{
                         padding: "6px 10px",
                         background: "#e11d48",
