@@ -1,9 +1,11 @@
 import { useState } from "react";
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE ||
-  (import.meta.env.DEV
-    ? "http://localhost:5000"
+
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SERVER_URL) ||
+  process.env.REACT_APP_SERVER_URL ||
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:5005"
     : "https://your-api.onrender.com");
 
 export default function CheckoutButton({ products = [] }) {

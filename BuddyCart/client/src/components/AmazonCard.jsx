@@ -10,7 +10,7 @@ function pickBadgeByWeather(weather) {
   return "Cold day pick";
 }
 
-function AmazonCard({
+export default function AmazonCard({
   item,
   title,
   imageSrc,
@@ -22,7 +22,7 @@ function AmazonCard({
   clickable = false,
   onAction,
   weather,
-  className=''
+  className = "",
 }) {
   const weatherBadge = pickBadgeByWeather(weather);
   const showBadge = badge ?? weatherBadge;
@@ -53,8 +53,6 @@ function AmazonCard({
     <div className="amazon-card-body">
       {eyebrowText && <p className="amazon-card-eyebrow">{eyebrowText}</p>}
       <h3 className="amazon-card-title">{tTitle}</h3>
-
-   
       {!clickable && (
         <button onClick={onAction} className="amazon-card-button">
           {actionText}
@@ -63,23 +61,21 @@ function AmazonCard({
     </div>
   );
 
-  const content = (
-    <article className="amazon-card">
+  const inner = (
+    <>
       {media}
       {body}
-    </article>
+    </>
   );
 
- 
-  return clickable && tHref ? (
-    <article className={`amazon-card ${className}`}>
-    <Link to={tHref} state={{ item }} className="amazon-card-link">
-      {content}
-    </Link>
-    </article>
-  ) : (
-    content
-  );
+  if (clickable && tHref) {
+    return (
+      <article className={`amazon-card ${className}`}>
+        <Link to={tHref} state={{ item }} className="amazon-card-link">
+          {inner}
+        </Link>
+      </article>
+    );
+  }
+  return <article className={`amazon-card ${className}`}>{inner}</article>;
 }
-
-export default AmazonCard;
