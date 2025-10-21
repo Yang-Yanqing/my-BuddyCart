@@ -17,6 +17,7 @@ require("./config")(app);
 
 app.use("/api/admin",require("./routes/admin.routes"));
 app.use("/api/products", require("./routes/product.routes"));
+app.use("/api/auth",require("./routes/auth.routes"));
 
 
 
