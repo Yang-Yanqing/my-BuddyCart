@@ -1,4 +1,8 @@
 const { Schema, model } = require("mongoose");
+const bcrypt = require("bcryptjs")
+
+const SALT_ROUNDS=parseInt(process.env.BCRYPT_SALT_ROUNDS||"10",10);
+
 
 // TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new Schema(
@@ -16,7 +20,9 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required.']
+      required: [true, 'Password is required.'],
+      select:false,
+      minlength:6
     },
     isVerified:{
       type:Boolean,
@@ -24,7 +30,6 @@ const userSchema = new Schema(
     } ,
     role:{
       type:String,
-      required: [true, 'You need choose a role.'],
       enum:["admin","vendor","customer"],
       default:"customer",
     },
@@ -36,6 +41,39 @@ const userSchema = new Schema(
     timestamps: true
   }
 );
+
+//lets build a hook to ensure password creation and modification
+//Remember Schema is a class,so it like a blueprint
+
+userSchema.pre("save",async function(next){
+  if(!this.isModified("password"))return next();
+  const salt=await bcrypt.genSalt(SALT_ROUNDS);
+  this.password=await bcrypt.hash(this.password,salt);
+   next();
+})
+
+userSchema.pre("findOneAndUpdate", async function(next) {
+  const update=this.getUpdate() || {};
+  
+  const toHash =
+(update && update.password) ||
+(update.$set && update.$set.password);
+
+if (toHash) {
+ const salt = await bcrypt.genSalt(SALT_ROUNDS);
+ const hashed = await bcrypt.hash(toHash, salt);
+if (update.password) update.password = hashed;
+if (update.$set && update.$set.password) update.$set.password = hashed;
+ this.setUpdate(update);
+ }
+
+  next();
+});
+
+userSchema.methods.comparePassword=function(p){
+if (!this.password) return Promise.resolve(false);
+return bcrypt.compare(p,this.password);
+}
 
 const User = model("User", userSchema);
 

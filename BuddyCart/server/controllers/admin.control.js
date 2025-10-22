@@ -59,7 +59,7 @@ const cleanProductsInDb=async (req,res,next)=>{
     try {
       const result=await Product.deleteMany({});
       return res.status(200).json({
-        massage: "All products in local DB have been deleted.",
+        message: "All products in local DB have been deleted.",
         deletedCount:result.deletedCount ?? 0,
       })
     } catch (err) {

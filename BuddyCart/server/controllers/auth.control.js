@@ -2,8 +2,14 @@ const User=require("../models/User.model");
 const RoleRequest=require("../models/RoleRequest.model")
 
 const register=async(req,res,next)=>{
+    
+
 try {
-    const {name,email,password,desiredRole }=req.body;
+    let {name,email,password,desiredRole }=req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "name, email, password are required." });
+    }
+    email = String(email).trim().toLowerCase();
     const emailExisting=await User.findOne({email});
      if(emailExisting){return res.status(409).json({ message: "Email already registered." });}
 
@@ -42,13 +48,14 @@ const loginUser=async(req,res,next)=>{
     try {
        const {email,password}=req.body;
 
-       const loginUser=await User.findOne({email});
+       const loginUser=await User.findOne({email}).select("+password");
        if(!loginUser){
         console.log("Verify is failed!");
         res.status(401).json({message:"Verify is failed!"})
         return;
        }
-       if(loginUser.password!==password){
+       const pass=await loginUser.comparePassword(password);
+       if(!pass){
         console.log("Verify is failed!");
         return res.status(401).json({ message: "Verify is failed!" });}
        
@@ -66,9 +73,9 @@ try {
     const { id }=req.params;
     const {name,email,password}=req.body;
    
-    if (!id) return sendError(res, 400, "id param is required.");
+    if (!id) return res.status(400).json({ message: "id param is required." });
 
-    // let updateUser={};
+    let updateUser={};
     if(name)updateUser.name=name;
     if(email)updateUser.email=email;
     if(password)updateUser.password=password;
@@ -85,12 +92,12 @@ try {
 
 const deleteUser=async(req,res,next)=>{
     try {
-        const {name}=req.body;
-        const deleteId=name._id;
-        const deleteUser=await User.findByIdAndDelete(deleteId)
-        return res.status(205).json({message:"User delete successfully!",user:{name:deleteUser.name}})
-        
-    } catch (err) {
+        const { id } = req.params;
+        if (!id) return res.status(400).json({ message: "id param is required." });
+        const deleted = await User.findByIdAndDelete(id);
+        if (!deleted) return res.status(404).json({ message: "User not found." });
+        return res.status(200).json({ message:"User delete successfully!", user:{ id: deleted._id, name: deleted.name } })
+        } catch (err) {
     console.error("Here is a problem of verifyUser.")
     next(err)
     }
