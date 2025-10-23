@@ -24,15 +24,17 @@ const userSchema = new Schema(
       select:false,
       minlength:6
     },
-    isVerified:{
-      type:Boolean,
-      default:false,
-    } ,
-    role:{
+    profileImage:{type:String},
+     role:{
       type:String,
       enum:["admin","vendor","customer"],
       default:"customer",
     },
+    isVerified:{
+      type:Boolean,
+      default:false,
+    } ,
+   
     verificationTokenHash:String,
     verificationTokenExpires:Date,},
 

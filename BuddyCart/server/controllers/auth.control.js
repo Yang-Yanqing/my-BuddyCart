@@ -1,9 +1,16 @@
 const User=require("../models/User.model");
-const RoleRequest=require("../models/RoleRequest.model")
+const RoleRequest=require("../models/RoleRequest.model");
+const jwt=require("jsonwebtoken");
+
+
+const signToken=(signUser)=>{
+return jwt.sign({sub:signUser._id,role:signUser.role},
+    process.env.JWT_SECRET,
+    {expiresIn:"7d"}
+)
+}
 
 const register=async(req,res,next)=>{
-    
-
 try {
     let {name,email,password,desiredRole }=req.body;
     if (!name || !email || !password) {
@@ -23,7 +30,7 @@ try {
         
         console.log(`[Here is a role request] User ${newUser.email} requested :${desiredRole}.Pending admin approval.`);
 
-        res.status(201).json({message:"Roll request submitted and block for approval ",user:{id:newUser._id,email:newUser.email,role:newUser.role},} )
+        res.status(201).json({message:"Role request submitted and pending admin approval. Current role remains 'customer'. ",user:{id:newUser._id,email:newUser.email,role:newUser.role},} )
         return;
     }
     
@@ -35,7 +42,10 @@ try {
 
    
 } catch (err) {
-    console.error("Here is a problem of register.")
+     if (err?.code === 11000) {
+    return res.status(409).json({ message: "Email already registered." });
+  }
+    console.error("Here is a problem of register.",err)
     next(err)
 }
 }
@@ -46,24 +56,33 @@ const verifyUser=async (req,res,next)=>{
 
 const loginUser=async(req,res,next)=>{
     try {
-       const {email,password}=req.body;
+       
+       const email=String(req.body.email || "").trim().toLowerCase();
+       const password=String(req.body.password || "");
+
 
        const loginUser=await User.findOne({email}).select("+password");
        if(!loginUser){
-        console.log("Verify is failed!");
-        res.status(401).json({message:"Verify is failed!"})
+        console.log("Login is failed!");
+        res.status(401).json({message:"Login is failed!"})
         return;
        }
+
        const pass=await loginUser.comparePassword(password);
-       if(!pass){
-        console.log("Verify is failed!");
-        return res.status(401).json({ message: "Verify is failed!" });}
        
-         console.log("Verify is passed!");
-            res.status(200).json({message:"User verify successfulluy!",
-           user:{id:loginUser._id,email:loginUser.email,role:loginUser.role}})        
+       if(!pass){
+        console.log("Login is failed!");
+        return res.status(401).json({ message: "Login is failed!" });}
+        const token=signToken(loginUser);
+
+         console.log("Login is passed!");
+
+        res.status(200).json(
+            {token,                
+           user:{id:loginUser._id,email:loginUser.email,role:loginUser.role},
+           message:"User login successfulluy!"})        
     } catch (err) {
-    console.error("Here is a problem of verifyUser.")
+    console.error("Here is a problem of loginUser.")
     next(err)
     }
 }
@@ -75,14 +94,16 @@ try {
    
     if (!id) return res.status(400).json({ message: "id param is required." });
 
-    let updateUser={};
-    if(name)updateUser.name=name;
-    if(email)updateUser.email=email;
-    if(password)updateUser.password=password;
+    let update={};
+    if(name)update.name=name;
+    if(email)update.email=email.trim().toLowerCase();
+    if(password)update.password=password;
+
+
    
-    const updated=await User.findByIdAndUpdate(id,updateUser,{new:true,runValidators:true,})
+    const updated=await User.findByIdAndUpdate(id,update,{new:true,runValidators:true,})
     
-    return res.status(200).json({message:"User updated successfully!",user:{id:updated._id,name:updated.name,email:updated.email,password:updated.password}})
+    return res.status(200).json({message:"User updated successfully!",user:{id:updated._id,name:updated.name,email:updated.email}})
 
 } catch (err) {
     console.error("Here is a problem of updateUser.")
@@ -98,7 +119,7 @@ const deleteUser=async(req,res,next)=>{
         if (!deleted) return res.status(404).json({ message: "User not found." });
         return res.status(200).json({ message:"User delete successfully!", user:{ id: deleted._id, name: deleted.name } })
         } catch (err) {
-    console.error("Here is a problem of verifyUser.")
+    console.error("Here is a problem of deleteUser.")
     next(err)
     }
 }
