@@ -3,14 +3,22 @@ import { useParams } from "react-router-dom";
 import { useItems } from "../context/ItemsContext";
 import { useCart } from "../context/CartContext";
 
+
 const ItemsDetailsPage = () => {
+const params=useParams();
+console.log('params=', params);
+
+
   const { itemId } = useParams();
   const { items } = useItems();
   const { addToCart } = useCart();
 
-  const idNum = Number(itemId);
-  const item = useMemo(() => items.find((p) => p.id === idNum), [items, idNum]);
-
+  // const idNum = Number(itemId);
+  const item = useMemo(() => {
+  if (!itemId) return undefined;
+  return items.find(p => String(p._id || p.id || p.externalId) === String(itemId));
+}, [items, itemId]);
+  
   if (!item) return <p style={{ padding: 24 }}>Loading item…</p>;
 
   const images =

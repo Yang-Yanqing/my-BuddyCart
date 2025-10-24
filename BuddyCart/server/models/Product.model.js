@@ -51,6 +51,29 @@ const productSchema=new mongoose.Schema(
     },{ timestamps: true }
 )
 
+
+productSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: (_doc, ret) => {
+    if (ret._id) ret._id = ret._id.toString();
+    if (ret.createdAt instanceof Date) ret.createdAt = ret.createdAt.toISOString();
+    if (ret.updatedAt instanceof Date) ret.updatedAt = ret.updatedAt.toISOString();
+    return ret;
+  },
+});
+
+productSchema.set("toObject", {
+  virtuals: true,
+  versionKey: false,
+  transform: (_doc, ret) => {
+    if (ret._id) ret._id = ret._id.toString();
+    if (ret.createdAt instanceof Date) ret.createdAt = ret.createdAt.toISOString();
+    if (ret.updatedAt instanceof Date) ret.updatedAt = ret.updatedAt.toISOString();
+    return ret;
+  },
+});
+
 const Review=mongoose.model("Review",reviewSchema);
 const Product=mongoose.model("Product",productSchema);
 

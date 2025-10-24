@@ -1,7 +1,7 @@
 import { useState } from "react";
+import axios from "axios";
 
 const API_BASE =
-
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SERVER_URL) ||
   process.env.REACT_APP_SERVER_URL ||
   (process.env.NODE_ENV === "development"
@@ -19,28 +19,24 @@ export default function CheckoutButton({ products = [] }) {
       }
       setLoading(true);
 
-      const res = await fetch(`${API_BASE}/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ products }),
-      });
+      
+      const { data } = await axios.post(
+        `${API_BASE}/api/checkout/create-checkout-session`,
+        { products },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      let payload;
-      try {
-        payload = await res.json();
-      } catch {
-        throw new Error(`Unexpected response (HTTP ${res.status})`);
-      }
+      if (!data?.url) throw new Error("No checkout URL returned from server");
 
-      if (!res.ok)
-        throw new Error(payload?.error || `Failed (HTTP ${res.status})`);
-      if (!payload?.url)
-        throw new Error("No checkout URL returned from server");
-
-      window.location.assign(payload.url);
+   
+      window.location.assign(data.url);
     } catch (err) {
       console.error("Checkout error:", err);
-      alert(`Checkout error: ${err.message || "Something went wrong"}`);
+      const msg =
+        err.response?.data?.error ||
+        err.message ||
+        "Something went wrong during checkout";
+      alert(`Checkout error: ${msg}`);
     } finally {
       setLoading(false);
     }
