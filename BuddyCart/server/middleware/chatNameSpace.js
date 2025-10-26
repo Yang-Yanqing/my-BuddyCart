@@ -1,6 +1,6 @@
 const jwt=require("jsonwebtoken");
 const {rooms,ensureRoom,sanitize}=require("./state");
-const crypto = require("node:crypto");
+const crypto=require("node:crypto");
 
 const attachChatNamespace=(io)=>{
 
@@ -113,6 +113,7 @@ chatSocket.on("set_showcase", ({ roomId, product }) => {
         members: Array.from(room.members.values()),
         showcase: room.showcase,
       });
+      
       if (room.members.size === 0) {
         room.destroy();
         rooms.delete(roomId);
@@ -126,4 +127,4 @@ chatSocket.on("set_showcase", ({ roomId, product }) => {
 
 
 
-module.exports= attachChatNamespace;
+module.exports=attachChatNamespace;
