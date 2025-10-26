@@ -1,12 +1,14 @@
-import {useEffect,useRef,useState} from "react";
+import {useEffect,useRef,useState,useMemo} from "react";
 import{io} from "socket.io-client"
 import ChatInput from "../components/ChatInput";
 import ChatMessages from "../components/ChatMessages";
 import ShowcasePanel from "../components/ShowcasePanel";
 import {useAuth} from "../context/AuthContext";
-import {useParams,useNavigate} from "react-router-dom";
+import {useParams} from "react-router-dom";
 
-const SOCKET_URL=(typeof import.meta!=="undefined"&&import.meta.env &&import.meta.env.VITE_SOCKET_URL)||process.env.REACT_APP_SOCKET_URL||"http://localhost:5005";  
+const SOCKET_URL=(typeof import.meta!=="undefined"&&import.meta.env &&import.meta.env.VITE_SOCKET_URL)||
+process.env.REACT_APP_SOCKET_URL||
+"http://localhost:5005";  
 const NAMESPACE="/chat"; 
 const SOCKET_PATH="/socket.io";   
 
@@ -15,6 +17,19 @@ const ChatPage=()=>{
     const {roomId:roomParam}=useParams();
 
     const roomId=roomParam||"lobby"
+
+    const[copied,setCopied]=useState(false);
+    
+    const copyRoomCode=async() => {
+    try {
+     await navigator.clipboard.writeText(roomId);
+      setCopied(true);
+      setTimeout(()=>setCopied(false),1500);
+   } catch (e) {
+     const ok=window.prompt("You can copy the roomId", roomId);
+     if (ok!==null) setCopied(true);
+   }
+  };
 
     const [myItem,setMyItem]=useState(null);
     const [peerItem,setPeerItem]=useState(null);
@@ -29,6 +44,8 @@ const ChatPage=()=>{
       if (!isAuthenticated) {
         setConnected(false);
         setMessages([]);
+        setMyItem(null);
+        setPeerItem(null);
       return;
     }
     if(!roomId)return;
@@ -70,13 +87,14 @@ const ChatPage=()=>{
         const socket=socketRef.current;
         if (!socket) return;
 
-    const onShowcase=(s)=>{setMyItem(s?.mine || null);
+    const onShowcase=(s)=>{
+      setMyItem(s?.mine || null);
       setPeerItem(s?.peer || null);
     };
 
     socket.on("showcase_state", onShowcase);
     return () => {socket.off("showcase_state", onShowcase);};
-  }, []);
+  }, [connected]);
 
   
   const onSend=(text)=>{if (!text?.trim()) return;
@@ -86,25 +104,57 @@ const ChatPage=()=>{
   };
 
   const shareToShowcase=(item)=>{
+     if(!item) return;
     socketRef.current?.emit("showcase:set", { item });
   };
   const clearMine=()=>socketRef.current?.emit("showcase:clear", { owner: "mine" });
   const clearPeer=()=>socketRef.current?.emit("showcase:clear", { owner: "peer" });
   const rate=(target, ratingKey)=>{
+    if(!target||!ratingKey) return;
     socketRef.current?.emit("showcase:rate",{target,rating:ratingKey});
   };
 
+
+   useEffect(() => {
+   if (!isAuthenticated) return;
+   const hasInvite=messages.some((m)=>m?.meta=== "roomInvite");
+   if (hasInvite) return;
+   const displayName = user?.name || user?.displayName || user?.username || "I";
+   const inviteText = `Hey,I'm${displayName}，Come hang out and chat with me! Copy the room code to join:${roomId}`;
+
+   const inviteMsg = {
+     id: `local_invite_${roomId}`,
+     type: "info",
+     text: inviteText,
+     createdAt: Date.now(),
+     meta: "roomInvite",
+     sender: { id: "system", name: "System" },
+   };
+
+   setMessages((prev) => (prev?.length ? [inviteMsg, ...prev] : [inviteMsg]));
+}, [isAuthenticated, roomId, user]);
+
   
-     const currentUserId=user?.id||user?._id||null;
+   const currentUserId = useMemo(()=> user?.id || user?._id || null, [user]);
 
 
 
 return(
     <main>
+       <div className="card" style={{marginBottom:12,padding:"10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ lineHeight:1.3 }}>
+         <div style={{ fontSize:14, opacity:0.8}}>Current room</div>
+        <div style={{ fontWeight:600 }}>{roomId}</div>
+     </div>
+     <button className="btn" style={{ marginLeft: "auto" }} onClick={copyRoomCode}>
+        {copied ? "Copied":"Copy roomId"}
+       </button>
+      </div>
+
         <div className="chatInput">
             <ChatMessages messages={messages} currentUserId={currentUserId}/>
             <br/>
-            <ChatInput onSend={onSend} disabled={false} maxLen={500}/>
+             <ChatInput onSend={onSend} disabled={!connected||!isAuthenticated}maxLen={500}/>
             {!connected && isAuthenticated && (
           <p style={{opacity:0.7}}>Connecting to the chat service…</p>
         )}

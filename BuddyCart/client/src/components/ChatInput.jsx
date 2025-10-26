@@ -14,7 +14,7 @@ const submit=()=>{
 
 const onKeyDown=(e)=>{
     if(e.nativeEvent.isComposing)return;
-    if(e.key==="Enter"&&!e.ctrlKey){
+    if(e.key==="Enter"&&e.ctrlKey){
         e.preventDefault();
         submit();}
 }
@@ -26,6 +26,7 @@ const onSubmit=(e)=>{
 
     return(
      <main>
+      
      <form className="chatInputForm" onSubmit={onSubmit}>
      <p>
         <textarea 

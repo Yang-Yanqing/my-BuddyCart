@@ -12,12 +12,15 @@ import CreateItemPage from "./pages/CreateItemPage";
 import UpdateItemPage from "./pages/UpdateItemPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
-import ChatPage from "./pages/ChatPage"
+import ChatAndShop from "./pages/ChatAndShop";
+import FullpageDashboard from "./pages/FullpageDashboard";
+import Profile from "./pages/ProfilePage";
 import "./styles/App.css";
 import { ItemsProvider } from "./context/ItemsContext";
 import { CartProvider } from "./context/CartContext";
 import { UserProvider } from "./context/UserContext";
-import { AuthProvider } from "./context/AuthContext";  
+import { useAuth } from "./context/AuthContext";
+// import { AuthProvider } from "./context/AuthContext";  
 
 
 //protected route(Draft)
@@ -47,7 +50,7 @@ export default function App() {
   const toggleSidebar = () => setIsSidebarOpen((p) => !p);
 
   return (
-    <AuthProvider> 
+    
       <UserProvider>
         <ItemsProvider>
           <CartProvider>
@@ -60,7 +63,7 @@ export default function App() {
                   />
                 }
               />
-                <Route path="/" element={<DashboardPage />} />
+                <Route path="/" element={<FullpageDashboard />} />
                 <Route path="/items/new" element={<CreateItemPage />} />
                 <Route path="/items/:itemId/edit" element={<UpdateItemPage />} />
                 <Route path="/items/:itemId" element={<ItemsDetailsPage />} />
@@ -68,7 +71,8 @@ export default function App() {
                 <Route path="/tags/:tag" element={<TagPage />} />
                 <Route path="/auth/register" element={<RegisterPage />} />
                 <Route path="/auth/login" element={<LoginPage />} />
-                <Route path="/chatpage"element={<ChatPage />}>
+                <Route path="/chatandshop/:roomId?"element={<ChatAndShop />}/>
+                <Route path="/profile"element={<Profile />}>
 
                 {/* what olny can be visite by admin and vendor
                 <Route
@@ -94,6 +98,6 @@ export default function App() {
           </CartProvider>
         </ItemsProvider>
       </UserProvider>
-    </AuthProvider>
+  
   );
 }

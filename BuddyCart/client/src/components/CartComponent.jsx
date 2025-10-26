@@ -63,7 +63,7 @@ export default function Cart() {
                 <div>
                   <strong>{i.title}</strong>
                   <div style={{ fontSize: 12, color: "#666" }}>
-                    ${Number.isFinite(i.unit) ? i.unit.toFixed(2) : "0.00"} each
+                    €{Number.isFinite(i.unit) ? i.unit.toFixed(2) : "0.00"} each
                   </div>
                 </div>
 

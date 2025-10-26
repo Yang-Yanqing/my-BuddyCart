@@ -77,12 +77,12 @@ console.log('params=', params);
             {discount > 0 ? (
               <>
                 <div style={styles.priceRow}>
-                  <span style={styles.priceNow}>${discountedPrice}</span>
-                  <span style={styles.priceWas}>${price.toFixed(2)}</span>
+                  <span style={styles.priceNow}>€{discountedPrice}</span>
+                  <span style={styles.priceWas}>€{price.toFixed(2)}</span>
                   <span style={styles.discountBadge}>-{discount}%</span>
                 </div>
                 <div style={styles.savingsLine}>
-                  You save ${(price - Number(discountedPrice)).toFixed(2)}
+                  You save €{(price - Number(discountedPrice)).toFixed(2)}
                 </div>
               </>
             ) : (

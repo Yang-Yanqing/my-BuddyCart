@@ -52,8 +52,8 @@ function Sidebar({ isOpen }) {
                   +
                 </button>
               </div>
-              <div>${c.product.price.toFixed(2)} each</div>
-              <div>Subtotal: ${(c.product.price * c.quantity).toFixed(2)}</div>
+              <div>€{c.product.price.toFixed(2)} each</div>
+              <div>Subtotal: €{(c.product.price * c.quantity).toFixed(2)}</div>
               <button
                 className={styles.removeBtn}
                 onClick={() => removeItem(c.product.id)}
@@ -65,7 +65,7 @@ function Sidebar({ isOpen }) {
         )}
       </aside>
       <div className={styles.cartFooter}>
-        <strong>Total: ${getTotal().toFixed(2)}</strong>
+        <strong>Total: €{getTotal().toFixed(2)}</strong>
         <CheckoutButton
           className={styles.checkoutBtn}
           products={productsForCheckout}

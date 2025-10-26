@@ -1,0 +1,304 @@
+/* ==========================================
+   Cozy Commerce + Chat · Warm Minimal Style
+   统一色板 / 字体 / 卡片 / 按钮 / 输入 / 切页
+   ========================================== */
+
+/* 1) 设计令牌（CSS变量）— 温暖柔和配色 */
+:root {
+  /* 背景与层级 */
+  --bg: #FAF8F6;              /* 米杏浅底 */
+  --bg-elev-1: #FFFFFF;       /* 提升层-卡片 */
+  --bg-elev-2: #F6F2EF;       /* 次级提升层/侧栏 */
+  --surface: #FFFDFC;         /* 输入面 */
+  --overlay: hsla(25, 40%, 96%, 0.6);
+
+  /* 温暖主色 + 清新辅色（更亲和，偏女性向但不失中性） */
+  --primary: #E87A7A;         /* 暖珊瑚粉 */
+  --primary-600: #e06666;
+  --primary-700: #cc5858;
+  --secondary: #61B3A8;       /* 清新薄荷青 */
+  --accent: #F2C94C;          /* 柔和金黄，用于少量强调 */
+
+  /* 文本与描边 */
+  --text-1: #2C2A29;          /* 主文本 */
+  --text-2: #6E6A68;          /* 次文本 */
+  --muted: #9C9794;           /* 注释/占位 */
+  --line: #E9E3DE;            /* 细分割线 */
+
+  /* 阴影与圆角 */
+  --shadow-sm: 0 2px 8px rgba(30, 27, 25, .06);
+  --shadow-md: 0 8px 24px rgba(30, 27, 25, .08);
+  --shadow-lg: 0 16px 40px rgba(30, 27, 25, .10);
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  /* 动效节奏 */
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 360ms;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+
+  /* 布局 */
+  --container: 1200px;
+  --page-padding: 16px;
+
+  /* 切页透视 */
+  --perspective: 1200px;
+}
+
+/* 2) Reset & 字体排版基线 */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; background: var(--bg); }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  margin: 0;
+  color: var(--text-1);
+  font-family: Inter, Rubik, "Noto Sans SC", system-ui, -apple-system, Segoe UI,
+               Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.55;
+  letter-spacing: 0.1px;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(242,201,76,.12), transparent 60%),
+    radial-gradient(1000px 520px at -10% 100%, rgba(232,122,122,.10), transparent 55%),
+    var(--bg);
+}
+
+/* 3) 标题层级（柔和不刺眼） */
+h1, h2, h3 {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin: 0 0 .6rem;
+}
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; color: var(--text-1); }
+h3 { font-size: 1.2rem; color: var(--text-2); }
+
+/* 4) 栅格容器与主区域 */
+.container {
+  width: min(100% - 2*var(--page-padding), var(--container));
+  margin: 0 auto;
+}
+.app-main {
+  min-height: 100dvh;
+  padding: 20px 0 40px;
+}
+
+/* 顶栏/侧栏（浅玻璃感） */
+.app-header {
+  position: sticky; top: 0; z-index: 40;
+  height: 60px; display: flex; align-items: center; gap: 12px;
+  padding: 0 var(--page-padding);
+  background: color-mix(in oklab, var(--bg-elev-2) 65%, transparent);
+  backdrop-filter: blur(10px) saturate(1.1);
+  border-bottom: 1px solid var(--line);
+}
+.app-sidebar {
+  width: 280px; min-width: 260px; height: 100%;
+  background: var(--bg-elev-2);
+  border-right: 1px solid var(--line);
+}
+
+/* 5) 卡片—柔和圆角 + 轻阴影 */
+.card {
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: #EDE6E1;
+}
+
+/* 6) 按钮—温柔且可点击的手感 */
+.btn {
+  --btn-bg: #fff;
+  --btn-fg: var(--text-1);
+  --btn-bd: var(--line);
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-bd);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease),
+              box-shadow var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease),
+              background var(--dur-fast) var(--ease);
+}
+.btn:active { transform: translateY(1px) scale(.99); }
+
+.btn-primary {
+  --btn-bg: linear-gradient(180deg, #FFECEC, #FFF9F8);
+  --btn-fg: #7a2d2d;
+  --btn-bd: #F4D7D7;
+  box-shadow: 0 6px 16px rgba(232,122,122,.15);
+}
+.btn-primary:hover {
+  border-color: #F0C3C3;
+  box-shadow: 0 10px 22px rgba(232,122,122,.22);
+}
+
+.btn-secondary {
+  --btn-bg: linear-gradient(180deg, #EBFAF7, #F7FFFD);
+  --btn-fg: #1e5f58;
+  --btn-bd: #CDEBE6;
+  box-shadow: 0 6px 16px rgba(97,179,168,.12);
+}
+.btn-secondary:hover {
+  border-color: #BFE1DC;
+  box-shadow: 0 10px 22px rgba(97,179,168,.18);
+}
+
+/* 7) 输入/选择（聊天 & 搜索友好） */
+.input, textarea, select {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease),
+              background var(--dur) var(--ease);
+}
+.input::placeholder, textarea::placeholder { color: var(--muted); }
+
+.input:focus, textarea:focus, select:focus {
+  border-color: #F2D7D1; /* 珊瑚粉的浅边 */
+  box-shadow: 0 0 0 3px rgba(232,122,122,.16);
+}
+
+/* WhatsApp式“贴底全宽聊天输入栏” */
+.chat-input-bar {
+  position: sticky; bottom: 0; left: 0; right: 0;
+  padding: 10px var(--page-padding);
+  background: color-mix(in oklab, var(--overlay) 80%, transparent);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(8px) saturate(1.05);
+}
+.chat-input {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px;
+}
+.chat-input textarea {
+  min-height: 48px; max-height: 180px; resize: vertical;
+  background: #FFFEFD;
+}
+
+/* 8) 标签/徽记（适合商品与状态） */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #7a2d2d;
+  background: linear-gradient(180deg, #FFF0F0, #FFE9E9);
+  border: 1px solid #F6DADA;
+}
+
+/* 9) 表格（Dashboard常用） */
+.table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  background: var(--bg-elev-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.table thead th {
+  background: #FFF7F5;
+  text-align: left; padding: 12px 14px;
+  color: var(--text-2); font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+.table tbody td {
+  padding: 12px 14px; border-bottom: 1px solid var(--line);
+}
+.table tbody tr:hover { background: #FFFBFA; }
+
+/* 10) 链接与微交互 */
+a {
+  color: #8a4d4d;
+  text-decoration: none;
+  transition: color var(--dur) var(--ease), text-shadow var(--dur) var(--ease);
+}
+a:hover { color: #6d3d3d; text-shadow: 0 0 18px rgba(232,122,122,.12); }
+
+/* 11) 现代 App “翻页/切页”手感（路由转场）
+   使用：外层 <div class="route-stack">，页面容器加 .route，并在路由切换时组合 enter/exit 类
+*/
+.route-stack { position: relative; perspective: var(--perspective); overflow: hidden; }
+.route {
+  will-change: transform, opacity, filter;
+  transform-style: preserve-3d; backface-visibility: hidden;
+  min-height: 100%;
+}
+.route-enter {
+  opacity: 0;
+  transform: translate3d(8%, 0, 0) rotateY(-5deg) scale(.985);
+  filter: blur(.5px);
+}
+.route-enter-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) rotateY(0) scale(1);
+  filter: blur(0);
+  transition: transform var(--dur-slow) var(--ease),
+              opacity var(--dur-slow) var(--ease),
+              filter var(--dur-slow) var(--ease);
+}
+.route-exit { opacity: 1; transform: none; }
+.route-exit-active {
+  opacity: 0;
+  transform: translate3d(-6%, 0, 0) rotateY(4deg) scale(.992);
+  filter: blur(.6px);
+  transition: transform var(--dur-slow) var(--ease),
+              opacity var(--dur-slow) var(--ease),
+              filter var(--dur-slow) var(--ease);
+}
+
+/* 12) 触摸滑动容器（商品推荐/故事轮播） */
+.swipe-scroll {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 88%;
+  gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+}
+.swipe-scroll > * { scroll-snap-align: start; border-radius: var(--radius-lg); }
+
+/* 13) 滚动条（低干扰） */
+:root { scrollbar-color: #E6DDD7 transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ECE2DC, #E5DAD3);
+  border: 2px solid transparent; background-clip: padding-box;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* 14) 减少动效（可访问性） */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+
+/* 全屏翻页容器 */
+.fullpage-root { position: relative; height: 100vh; overflow: hidden; }
+.snap-container {
+  height: 100%; width: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+.snap-section { min-height: 100vh; scroll-snap-align: start; display: flex; align-items: center; }

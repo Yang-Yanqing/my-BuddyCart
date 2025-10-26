@@ -109,7 +109,7 @@ function Slot({ title, item, onClear, active, onSelect }) {
             }}
             style={clearBtn}
           >
-            撤下
+            Remove
           </button>
         ) : (
           <span style={{ opacity: 0.6, fontSize: 12 }}>空位</span>
@@ -123,6 +123,7 @@ function Slot({ title, item, onClear, active, onSelect }) {
                 src={item.thumbnail || item.image}
                 alt={item.title || "item"}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                loading="lazy"
               />
             ) : (
               <div style={thumbPh}>No image</div>

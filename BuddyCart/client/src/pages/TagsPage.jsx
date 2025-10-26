@@ -25,7 +25,7 @@ export default function TagPage() {
             <div key={p.id}>
               <img src={p.thumbnail} alt={p.title} />
               <h3>{p.title}</h3>
-              <p>${p.price}</p>
+              <p>€{p.price}</p>
             </div>
           ))}
         </div>
