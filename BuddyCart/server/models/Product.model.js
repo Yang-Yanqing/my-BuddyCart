@@ -10,44 +10,66 @@ const reviewSchema = new mongoose.Schema({
 
 const productSchema=new mongoose.Schema(
     {
-    externalId:{ type: Number, index: true, unique: true, sparse: true },
-    title: { type: String, required: true },
+    externalId:{type: Number, index: true, unique: true, sparse: true},
+    
+    title: {type: String, required: true},
     description: String,
-    category: { type: String, index: true },
+    
+    category: {type: String, index: true},
     brand: String,
-    price: { type: Number, required: true },
+    
+    price: {type: Number, required: true},
+    
     discountPercentage: Number,
-    rating: Number,
-    stock: { type: Number, default: 0 },
+    
+    rating:{type:Number,min:0,max:5},
+    
+    stock: {type: Number, default:0},
+    
     sku: String,
 
-     weight: Number,
-     dimensions: {
+    weight: Number,
+    
+    dimensions: {
     width: Number,
     height: Number,
     depth: Number
      },
+    
      warrantyInformation: String,
      shippingInformation: String,
+    
      availabilityStatus: {
      type: String,
      enum: ['In Stock', 'Out of Stock', 'Preorder'],
      default: 'In Stock' },
+    
      returnPolicy: String,
+    
      minimumOrderQuantity: { type: Number, default: 1 },
 
      images: [String],
+    
      thumbnail: String,
 
      tags: [String],
+     
      reviews: [reviewSchema],
 
     meta: {
-    createdAt: Date,
-    updatedAt: Date,
-    barcode: String,
-    qrCode: String
-  }
+    createdAt:Date,
+    updatedAt:Date,
+    barcode:String,
+    qrCode:String
+  },
+
+    owner:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"User",
+      index:true,
+      default:null
+    }
+
     },{ timestamps: true }
 )
 

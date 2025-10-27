@@ -54,6 +54,13 @@ userSchema.pre("save",async function(next){
    next();
 })
 
+userSchema.add({
+ likedProductTitles: { type: [String], default: [] },
+ colorR: { type: Number, default: 255, min: 0, max: 255 },
+ colorG: { type: Number, default: 255, min: 0, max: 255 },
+ colorB: { type: Number, default: 255, min: 0, max: 255 },
+});
+
 userSchema.pre("findOneAndUpdate", async function(next) {
   const update=this.getUpdate() || {};
   

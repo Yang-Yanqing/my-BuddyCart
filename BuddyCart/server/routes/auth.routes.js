@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const {register,verifyUser,loginUser,updateUser,deleteUser}=require("../controllers/auth.control");
-const {requireAuth} = require("../middleware/requireAuth");
-const User=require("../models/User.model")
+const {register,verifyUser,loginUser,updateUser,deleteUser,createOrReuseRoleRequest,trackPreferenceClick,}=require("../controllers/auth.control");
+const {requireAuth,requireRole} = require("../middleware/requireAuth");
+const {User}=require("../models/User.model")
 
 
 router.post('/register',register);
@@ -17,5 +17,7 @@ router.get("/me",requireAuth,async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+router.post("/role-requests", requireAuth,createOrReuseRoleRequest);
+router.post("/me/click",requireAuth,requireRole("customer"),trackPreferenceClick);
 
 module.exports=router;

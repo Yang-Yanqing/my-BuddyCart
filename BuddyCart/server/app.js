@@ -16,8 +16,8 @@ const app = express();
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
-
-app.use("/api/admin",require("./routes/admin.routes"));
+app.use("/api/admin", require("./routes/admin.routes"));
+app.use("/api/admin/role-requests",require("./routes/adminRoleRequests.routes"));
 app.use("/api/products", require("./routes/product.routes"));
 app.use("/api/auth",require("./routes/auth.routes"));
 app.use("/api/checkout", require("./routes/checkout.routes"));

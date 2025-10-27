@@ -1,4 +1,4 @@
-const jwt=require("jsonwebtoken");
+const {verifyAccessToken}=require("../middleware/jwt");
 const {rooms,ensureRoom,sanitize}=require("./state");
 const crypto=require("node:crypto");
 
@@ -15,8 +15,14 @@ chatNS.use((chatSocket,next)=>{
         }
         if(!token)token=chatSocket.handshake.query?.token;
         if(!token)return next(new Error("Unauthorized:no token"));
-        const userLoad=jwt.verify(token,process.env.JWT_SECRET);
-        chatSocket.data.user={userId:userLoad.sub,name:userLoad.name||"User",roles:userLoad.roles||[],}
+
+        const userLoad=verifyAccessToken(token);
+        chatSocket.data.user={
+          userId:userLoad.id,
+          role:userLoad.role,
+          name:userLoad.name||"User"
+        }
+        
         return next();
     } catch (err) {
         return next(new Error("Unauthorized: invalid token"));
@@ -30,7 +36,7 @@ chatNS.on("connection",(chatSocket)=>{
     chatSocket.broadcast.emit('chat:system', {
       type: 'user_online',
       userId: u.userId,
-      name: u.name,
+      name: u.name||"User",
       at: Date.now(),
     }
 );

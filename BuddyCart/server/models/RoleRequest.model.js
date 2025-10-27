@@ -1,14 +1,17 @@
 const mongoose=require("mongoose");
 
 const roleRequestSchema=new mongoose.Schema({
-    user:{type:mongoose.Types.ObjectId,ref:"User",required:true},
+    user:{type:mongoose.Types.ObjectId,ref:"User",required:true,index:true},
     requestedRole:{type:String,enum:["vendor","admin"],required:true},
-    reviewStatus:{type:String,enum:["pending","approved","rejected"],default:"pending"},
+
+    status:{type:String,enum:["pending","closed"],default:"pending", index:true},
+    reviewStatus:{type:String,enum:["approved","rejected"],default:undefined,index:true},
     reviewBy:{type:mongoose.Types.ObjectId,ref:"User"},
-    reviewDate:Date,
-    reviewReason:String,
+    reviewDate:{type:Date},
+    reviewReason:{type:String},
 },
 {timestamps:true}
 )
 
-module.exports=mongoose.model("RoleRequest",roleRequestSchema)
+const RoleRequest=mongoose.model("RoleRequest",roleRequestSchema);
+module.exports={RoleRequest}
