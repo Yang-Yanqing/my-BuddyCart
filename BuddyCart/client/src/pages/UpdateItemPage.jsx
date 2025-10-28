@@ -16,7 +16,7 @@ export default function ItemEditPage() {
     let ignore = false;
     (async () => {
       try {
-        const { data } = await axios.get(`https://dummyjson.com/products/${itemId}`);
+        const { data } = await axios.get(`/api/products/${itemId}`);
         if (!ignore) {
           setForm({
             title: data.title ?? "",
@@ -42,7 +42,7 @@ export default function ItemEditPage() {
     const { name, value } = e.target;
     setForm((f) => ({
       ...f,
-      [name]: name === "price" ? (value === "" ? "" : Number(value)) : value
+      [name]:name==="price"?(value === ""?"" : Number(value)) : value
     }));
   };
 
@@ -54,7 +54,7 @@ export default function ItemEditPage() {
         ...form,
         price: Number(form.price) || 0
       };
-      const { data } = await axios.put(`https://dummyjson.com/products/${itemId}`, payload);
+      const { data } = await axios.put(`/api/products/${itemId}`, payload);
 
           setItems((prev) =>
         prev.map((p) => (p.id === Number(itemId) ? { ...p, ...data } : p))

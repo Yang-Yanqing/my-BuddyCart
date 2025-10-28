@@ -34,7 +34,7 @@ const onSubmit=(e)=>{
      onChange={onChange}
      onKeyDown={onKeyDown} 
      disabled={disabled}
-     placeholder="Type a message here...(Enter to send, Shift+Enter for newline)"
+     placeholder="Type a message here...(Ctrl+Enter to send, Enter/Shift+Enter for newline)"
      rows={3}
         />
      </p>

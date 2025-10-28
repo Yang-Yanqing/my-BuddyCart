@@ -1,33 +1,50 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useItems } from "../context/ItemsContext";
 import { useCart } from "../context/CartContext";
-
+import productId from "../utils/productId";
+import axios from "axios";
 
 const ItemsDetailsPage = () => {
-const params=useParams();
-console.log('params=', params);
-
-
   const { itemId } = useParams();
   const { items } = useItems();
   const { addToCart } = useCart();
 
-  // const idNum = Number(itemId);
-  const item = useMemo(() => {
-  if (!itemId) return undefined;
-  return items.find(p => String(p._id || p.id || p.externalId) === String(itemId));
-}, [items, itemId]);
-  
-  if (!item) return <p style={{ padding: 24 }}>Loading item…</p>;
 
-  const images =
-    Array.isArray(item.images) && item.images.length
-      ? item.images
-      : [item.thumbnail || ""];
+  const localMatch = useMemo(() => {
+    if (!itemId) return undefined;
+    return items.find((p) => productId(p) === String(itemId));
+  }, [items, itemId]);
+
+
+  const [fetched, setFetched] = useState(null);
+  useEffect(() => {
+    if (localMatch || !itemId) return;
+    let canceled = false;
+    (async () => {
+      try {
+        const { data } = await axios.get(`/api/products/${itemId}`);
+        if (!canceled) setFetched(data);
+      } catch (_) {
+           }
+    })();
+    return () => {
+      canceled = true;
+    };
+  }, [localMatch, itemId]);
+
+  const theItem = localMatch ?? fetched;
+  if (!theItem) return <p style={{ padding: 26 }}>Loading item…</p>;
+
+  const images = Array.isArray(theItem.images) && theItem.images.length
+    ? theItem.images
+    : [theItem.thumbnail || ""];
+
   const discount =
-    typeof item.discountPercentage === "number" ? item.discountPercentage : 0;
-  const price = Number(item.price) || 0;
+    typeof theItem.discountPercentage === "number"
+      ? theItem.discountPercentage
+      : 0;
+  const price = Number(theItem.price) || 0;
   const discountedPrice =
     discount > 0 ? (price * (1 - discount / 100)).toFixed(2) : price.toFixed(2);
 
@@ -38,7 +55,7 @@ console.log('params=', params);
           <div style={styles.mainImageWrap}>
             <img
               src={images[0]}
-              alt={item.title}
+              alt={theItem.title}
               style={styles.mainImage}
               loading="lazy"
             />
@@ -49,7 +66,7 @@ console.log('params=', params);
               <div key={idx} style={styles.thumbBox}>
                 <img
                   src={src}
-                  alt={`${item.title} ${idx + 1}`}
+                  alt={`${theItem.title} ${idx + 1}`}
                   style={styles.thumbImg}
                   loading="lazy"
                 />
@@ -59,18 +76,16 @@ console.log('params=', params);
         </div>
 
         <aside style={styles.buyCard}>
-          <h1 style={styles.title}>{item.title}</h1>
+          <h1 style={styles.title}>{theItem.title}</h1>
 
           <div style={styles.metaRow}>
-            {typeof item.rating === "number" && (
-              <span title={`Rating: ${item.rating}`} style={styles.rating}>
-                ★ {item.rating.toFixed(1)}
+            {typeof theItem.rating === "number" && (
+              <span title={`Rating: ${theItem.rating}`} style={styles.rating}>
+                ★ {theItem.rating.toFixed(1)}
               </span>
             )}
-            {item.brand && <span style={styles.metaDot}>•</span>}
-            {item.brand && (
-              <span style={styles.brand}>Brand: {item.brand}</span>
-            )}
+            {theItem.brand && <span style={styles.metaDot}>•</span>}
+            {theItem.brand && <span style={styles.brand}>Brand: {theItem.brand}</span>}
           </div>
 
           <div style={styles.priceBlock}>
@@ -87,7 +102,7 @@ console.log('params=', params);
               </>
             ) : (
               <div style={styles.priceRow}>
-                <span style={styles.priceNow}>${price.toFixed(2)}</span>
+                <span style={styles.priceNow}>€{price.toFixed(2)}</span>
               </div>
             )}
           </div>
@@ -96,34 +111,36 @@ console.log('params=', params);
             <span
               style={{
                 ...styles.stockPill,
-                background: item.stock > 0 ? "#E8F5E9" : "#FDECEA",
-                color: item.stock > 0 ? "#1B5E20" : "#B71C1C",
+                background: (theItem.stock || 0) > 0 ? "#E8F5E9" : "#FDECEA",
+                color: (theItem.stock || 0) > 0 ? "#1B5E20" : "#B71C1C",
               }}
             >
-              {item.stock > 0 ? "In stock" : "Out of stock"}
+              {(theItem.stock || 0) > 0 ? "In stock" : "Out of stock"}
             </span>
-            <span style={styles.stockCount}>({item.stock} units)</span>
+            <span style={styles.stockCount}>
+              ({Number(theItem.stock || 0)} units)
+            </span>
           </div>
 
           <button
-            onClick={() => addToCart(item)}
-            disabled={item.stock <= 0}
+            onClick={() => addToCart(theItem)}
+            disabled={(theItem.stock || 0) <= 0}
             style={{
               ...styles.addBtn,
-              opacity: item.stock <= 0 ? 0.7 : 1,
-              cursor: item.stock <= 0 ? "not-allowed" : "pointer",
+              opacity: (theItem.stock || 0) <= 0 ? 0.7 : 1,
+              cursor: (theItem.stock || 0) <= 0 ? "not-allowed" : "pointer",
             }}
           >
             Add to Cart
           </button>
 
           <ul style={styles.quickList}>
-            {item.shippingInformation && (
-              <li>Shipping: {item.shippingInformation}</li>
+            {theItem.shippingInformation && (
+              <li>Shipping: {theItem.shippingInformation}</li>
             )}
-            {item.returnPolicy && <li>Returns: {item.returnPolicy}</li>}
-            {item.warrantyInformation && (
-              <li>Warranty: {item.warrantyInformation}</li>
+            {theItem.returnPolicy && <li>Returns: {theItem.returnPolicy}</li>}
+            {theItem.warrantyInformation && (
+              <li>Warranty: {theItem.warrantyInformation}</li>
             )}
           </ul>
         </aside>
@@ -132,30 +149,30 @@ console.log('params=', params);
       <section style={styles.detailsGrid}>
         <div style={styles.card}>
           <h2 style={styles.h2}>Description</h2>
-          <p style={styles.description}>{item.description}</p>
+          <p style={styles.description}>{theItem.description}</p>
         </div>
 
         <div style={styles.card}>
           <h2 style={styles.h2}>Details</h2>
           <ul style={styles.detailsList}>
-            {item.brand && (
+            {theItem.brand && (
               <li>
-                <strong>Brand:</strong> {item.brand}
+                <strong>Brand:</strong> {theItem.brand}
               </li>
             )}
-            {item.category && (
+            {theItem.category && (
               <li>
-                <strong>Category:</strong> {item.category}
+                <strong>Category:</strong> {theItem.category}
               </li>
             )}
-            {Array.isArray(item.tags) && item.tags.length > 0 && (
+            {Array.isArray(theItem.tags) && theItem.tags.length > 0 && (
               <li>
-                <strong>Tags:</strong> {item.tags.join(", ")}
+                <strong>Tags:</strong> {theItem.tags.join(", ")}
               </li>
             )}
-            {item.availabilityStatus && (
+            {theItem.availabilityStatus && (
               <li>
-                <strong>Availability:</strong> {item.availabilityStatus}
+                <strong>Availability:</strong> {theItem.availabilityStatus}
               </li>
             )}
           </ul>

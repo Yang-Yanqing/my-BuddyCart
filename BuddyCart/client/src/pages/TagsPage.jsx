@@ -7,7 +7,7 @@ export default function TagPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      const res = await fetch(`https://dummyjson.com/products/category/${tag}`);
+      const res = await fetch(`/api/products?category=${encodeURIComponent(tag)}&limit=60`);
       const data = await res.json();
       setProducts(data.products || []);
     }

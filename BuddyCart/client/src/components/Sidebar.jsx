@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import styles from "../components/Sidebar.module.css";
 import { useCart } from "../context/CartContext";
+import productId from "../utils/productId"
 import CheckoutButton from "./CheckoutButton";
 function Sidebar({ isOpen }) {
   const { cart, increaseQuantity, decreaseQuantity, removeItem, getTotal } =
     useCart();
-  const productsForCheckout = cart.map(({ product, quantity }) => ({
-    id: product.id,
-    title: product.title,
-    price: product.price,
+  const productsForCheckout = cart.map(({product,quantity}) => ({
+    name:product.title,
+    price:Number(product.price)||0,
     quantity,
+    productId:productId(product)
   }));
   const NAVBAR_HEIGHT = 52;
   return (
@@ -41,14 +42,14 @@ function Sidebar({ isOpen }) {
           <p>Your cart is empty!</p>
         ) : (
           cart.map((c) => (
-            <div key={c.product.id} className={styles.cartItem}>
+            <div key={productId(c.product)} className={styles.cartItem}>
               <div className={styles.itemHeader}>{c.product.title}</div>
               <div className={styles.quantityControl}>
-                <button onClick={() => decreaseQuantity(c.product.id)}>
+                <button onClick={()=> decreaseQuantity(productId(c.product))}>
                   -
                 </button>
                 <span>{c.quantity}</span>
-                <button onClick={() => increaseQuantity(c.product.id)}>
+                <button onClick={()=> increaseQuantity(productId(c.product))}>
                   +
                 </button>
               </div>
@@ -56,7 +57,7 @@ function Sidebar({ isOpen }) {
               <div>Subtotal: €{(c.product.price * c.quantity).toFixed(2)}</div>
               <button
                 className={styles.removeBtn}
-                onClick={() => removeItem(c.product.id)}
+                onClick={() => removeItem(productId(c.product))}
               >
                 Remove
               </button>

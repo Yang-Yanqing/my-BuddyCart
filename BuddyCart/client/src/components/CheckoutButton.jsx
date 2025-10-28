@@ -8,7 +8,7 @@ const API_BASE =
     ? "http://localhost:5005"
     : "https://your-api.onrender.com");
 
-export default function CheckoutButton({ products = [] }) {
+export default function CheckoutButton({products=[],className}) {
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -46,6 +46,7 @@ export default function CheckoutButton({ products = [] }) {
     <button
       onClick={handleCheckout}
       disabled={loading}
+      className={className}
       style={{
         padding: "10px 20px",
         fontSize: "16px",

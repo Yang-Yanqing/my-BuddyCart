@@ -27,7 +27,7 @@ export default function ItemCreatePage() {
     e.preventDefault();
     try {
       setSaving(true);
-      const { data } = await axios.post("https://dummyjson.com/products/add", form);
+      const { data } = await axios.post("/api/products", form);
 
       
       setItems((prev) => [data, ...prev]);

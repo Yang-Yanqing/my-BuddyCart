@@ -3,6 +3,13 @@ import axios from "axios";
 import {useAuth} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
 
+const API_BASE=(typeof import.meta!=="undefined"&&
+    import.meta.env&&import.meta.env.VITE_SERVER_URL) ||
+ process.env.REACT_APP_SERVER_URL ||
+ (process.env.NODE_ENV==="development" ? 
+    "http://localhost:5005" : 
+    "https://your-api.onrender.com");
+
 
 const loginForm={
     email:"",
@@ -21,7 +28,7 @@ const LoginPage=()=>{
 const toBackend=async(e)=>{
      e.preventDefault();
     try {
-    const res = await axios.post("http://localhost:5005/api/auth/login",login);
+    const res=await axios.post(`${API_BASE}/api/auth/login`, login);
     const {token,user} = res.data;
     loginUser(token, user);
     if (user.role === "admin") {navigate("/admin");alert("Admin logIn successful!");}

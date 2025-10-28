@@ -1,41 +1,40 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
-
+import productId from "../utils/productId"
 export const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   const addToCart = (product) => {
+    const pid=productId(product); if(!pid)return;
     setCart((prev) => {
-      const existing = prev.find((c) => c.product.id === product.id);
+      const existing=prev.find((c)=>productId(c.product)===pid);
+
       if (existing) {
-        return prev.map((c) =>
-          c.product.id === product.id ? { ...c, quantity: c.quantity + 1 } : c
-        );
+        return prev.map((c)=>productId(c.product)===pid?{ ...c, quantity:c.quantity+1}:c);
       }
       return [...prev, { product, quantity: 1 }];
     });
   };
 
-  const increaseQuantity = (id) => {
+  const increaseQuantity=(id)=>{
     setCart((prev) =>
       prev.map((c) =>
-        c.product.id === id ? { ...c, quantity: c.quantity + 1 } : c
+       productId(c.product)===String(id)?{ ...c, quantity: c.quantity + 1 } : c
       )
     );
   };
 
-  const decreaseQuantity = (id) => {
-    setCart((prev) =>
+  const decreaseQuantity=(id)=>{
+    setCart((prev)=>
       prev
         .map((c) =>
-          c.product.id === id ? { ...c, quantity: c.quantity - 1 } : c
-        )
-        .filter((c) => c.quantity > 0)
+         productId(c.product)===String(id)?{ ...c, quantity: c.quantity-1}:c)
+        .filter((c)=>c.quantity>0)
     );
   };
 
-  const removeItem = (id) => setCart((prev) => prev.filter((c) => c.product.id !== id));
+  const removeItem = (id) => setCart((prev) => prev.filter((c) =>productId(c.product)!==String(id)));
   const clearCart = () => setCart([]);
   const getTotal = () => cart.reduce((acc, c) => acc + c.quantity * c.product.price, 0);
 

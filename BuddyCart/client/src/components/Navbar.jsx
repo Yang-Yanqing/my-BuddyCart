@@ -16,18 +16,9 @@ function Navbar({ toggleSidebar }) {
     [cart]
   );
 
-  useEffect(() => {
-    async function loadDivisions() {
-      try {
-        await fetchTaggedProducts();
-        const allDivisions = [...Object.keys(divisionMap)];
-        setDivisionsList(allDivisions);
-      } catch (error) {
-        console.error("Error loading divisions:", error);
-      }
-    }
-    loadDivisions();
-  }, []);
+  useEffect(()=>{
+        setDivisionsList(Object.keys(divisionMap));
+      }, []);
 
   const handleMouseEnter = (div) => setOpenDropdown(div);
   const handleMouseLeave = () => setOpenDropdown(null);

@@ -4,6 +4,7 @@ import CloudinaryGallery from "../components/CloudinaryGallery";
 import WeatherWidget from "../components/WeatherWidget";
 import AmazonCard from "../components/AmazonCard";
 import { useItems } from "../context/ItemsContext";
+import productId from "../utils/productId"
 
 function pickByWeather(items, weather) {
   if (!Array.isArray(items) || items.length === 0) return [];
@@ -42,7 +43,7 @@ const DashboardPage = () => {
 
   const { items } = useItems();
 
-  const picks = useMemo(
+  const picks=useMemo(
     () => pickByWeather(items, weatherInfo),
     [items, weatherInfo]
   );
@@ -70,7 +71,7 @@ const DashboardPage = () => {
         <div className="amazon-cards amazon-cards--spotlight">
           {picks.map((p) => (
             <AmazonCard
-              key={p.id}
+              key={productId(p)}
               item={p}
               weather={weatherInfo}
               clickable

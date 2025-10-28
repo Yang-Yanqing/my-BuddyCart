@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/AmazonCard.css";
+import productId from "../utils/productId"
 
 function pickBadgeByWeather(weather) {
   if (!weather || weather.temp == null) return null;
@@ -30,7 +31,7 @@ export default function AmazonCard({
   const tTitle = title ?? item?.title ?? "";
   const tImage = imageSrc ?? item?.thumbnail ?? item?.image;
   const tAlt   = imageAlt ?? tTitle;
-  const tHref  = href ?? (item ? `/items/${item.id}` : undefined);
+  const tHref = href ?? (item ? `/items/${productId(item)}` : undefined);
 
   const eyebrowText =
     eyebrow ??

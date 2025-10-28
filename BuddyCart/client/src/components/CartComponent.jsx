@@ -20,9 +20,9 @@ export default function Cart() {
     const id = product?.id ?? `tmp_${idx}`;
     const title = product?.title ?? product?.name ?? "Unknown Product";
 
-    let unit = toNumber(product?.price, 0);
-    const qty = toNumber(entry?.quantity, 1);
-    const subtotal = unit * qty;
+    let unit=toNumber(product?.price, 0);
+    const qty=toNumber(entry?.quantity, 1);
+    const subtotal=unit*qty;
 
     return { id, title, unit, qty, subtotal };
   });
@@ -74,11 +74,11 @@ export default function Cart() {
                 </div>
 
                 <div style={{ minWidth: 120, textAlign: "right" }}>
-                  $
-                  {Number.isFinite(i.subtotal) ? i.subtotal.toFixed(2) : "0.00"}
+                  €
+                  {Number.isFinite(i.subtotal)?i.subtotal.toFixed(2) : "0.00"}
                 </div>
 
-                <button onClick={() => removeItem(i.id)}>Remove</button>
+                <button onClick={()=>removeItem(i.id)}>Remove</button>
               </li>
             ))}
           </ul>
@@ -91,7 +91,7 @@ export default function Cart() {
               marginTop: 16,
             }}
           >
-            <h3 style={{ margin: 0 }}>Total: ${total.toFixed(2)}</h3>
+            <h3 style={{ margin: 0 }}>Total:€{total.toFixed(2)}</h3>
 
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={clearCart}>Clear Cart</button>

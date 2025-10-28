@@ -77,4 +77,4 @@ function Avatar({ name = "?", src, size = 64 }) {
 }
 
 
-export default  Profile
+export default  Profile;

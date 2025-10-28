@@ -9,6 +9,12 @@ const authForm={
     role:""
 }
 
+const API_BASE = (typeof import.meta!=="undefined"&&import.meta.env&&import.meta.env.VITE_SERVER_URL)||
+process.env.REACT_APP_SERVER_URL ||
+(process.env.NODE_ENV==="development"?
+    "http://localhost:5005":
+    "https://your-api.onrender.com");
+
 const RegisterPage=()=>{
 const [auth,setAuth]=useState(authForm);
 const onChange=(e)=>{
@@ -19,7 +25,7 @@ const toBackend=async (e)=>{
     e.preventDefault();
     try {
         const {name,email,password,role}=auth;
-        const res=await axios.post("http://localhost:5005/api/auth/register",{name,email,password,desiredRole:role});
+        const res=await axios.post(`${API_BASE}/api/auth/register`,{name,email,password,desiredRole:role});
         console.log("Registered:", res.data);
         alert("Registration successful!");
     } catch (error) {

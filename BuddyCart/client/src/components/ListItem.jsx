@@ -2,18 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useItems } from "../context/ItemsContext";
+import { useAuth } from "../context/AuthContext";
+import productId from "../utils/productId"
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
 
+
 const ListItem = () => {
+  const {user}=useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const { items, setItems } = useItems();
+  const { items,setItems } = useItems();
   const { addToCart } = useCart();
-  const { role, toggleRole } = useUser();
+  const { role,toggleRole } = useUser();
 
   const totalPages = Math.max(Math.ceil(total / limit), 1);
 
@@ -55,7 +59,7 @@ const ListItem = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
       await axios.delete(`/api/admin/products/${id}`);
-      setItems((prev) => prev.filter((p) => (p?._id ?? p?.id) !== id));
+      setItems((prev) => prev.filter((p) => productId(p) !== String(id)));
       setTotal((t) => Math.max(t - 1, 0));
     } catch (err) {
       console.error("delete failed:", err);
@@ -87,16 +91,16 @@ const ListItem = () => {
             borderRadius: 8,
             border: "none",
             cursor: "pointer",
-            background: role === "admin" ? "#2563eb" : "#9ca3af",
+            background: role==="admin"?"#2563eb":"#9ca3af",
             color: "white",
             fontWeight: 600,
             fontSize: 14,
           }}
         >
-          Current Role: {role === "admin" ? "Admin" : "Customer"} (click to switch)
+          Current Role: {role==="admin"?"Admin":"Customer"} (click to switch)
         </button>
 
-        {role === "admin" && (
+        {user?.role === "admin" && (
           <Link
             to="/items/new"
             style={{
@@ -125,7 +129,7 @@ const ListItem = () => {
           }}
         >
           {items.map((item) => {
-            const uid = String(item?._id ?? item?.id ?? "");
+            const uid=productId(item);
             if (!uid) return null;
 
             return (
@@ -192,9 +196,9 @@ const ListItem = () => {
 
                 <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                   <button
-                    onClick={() => addToCart(item)}
-                    style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ddd" }}
-                  >
+                    onClick={async ()=>{addToCart(item);
+                      try{await axios.post("/api/auth/me/click", {title:item?.title,category:item?.category});}
+                      catch{}}}>
                     Add to Cart
                   </button>
 
@@ -227,10 +231,10 @@ const ListItem = () => {
 
       <div style={{ marginTop: 20, textAlign: "center" }}>
         <button
-          onClick={() => {
-            setPage((p) => {
-              const next = Math.max(p - 1, 1);
-              if (next !== p) window.scrollTo({ top: 0, behavior: "smooth" });
+          onClick={()=>{
+            setPage((p)=>{
+              const next=Math.max(p - 1, 1);
+              if (next!==p) window.scrollTo({ top: 0, behavior: "smooth" });
               return next;
             });
           }}

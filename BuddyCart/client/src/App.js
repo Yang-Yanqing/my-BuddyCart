@@ -3,7 +3,6 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
-import DashboardPage from "./pages/DashboardPage";
 import ItemsDetailsPage from "./pages/ItemsDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import TagPage from "./pages/TagsPage";
@@ -19,18 +18,8 @@ import "./styles/App.css";
 import { ItemsProvider } from "./context/ItemsContext";
 import { CartProvider } from "./context/CartContext";
 import { UserProvider } from "./context/UserContext";
-import { useAuth } from "./context/AuthContext";
-// import { AuthProvider } from "./context/AuthContext";  
+import ProtectedRoute from "./components/ProtectedRoute"
 
-
-//protected route(Draft)
-function ProtectedRoute({ children, roles }) {
-  const { useAuth } = require("./context/AuthContext");
-  const { isAuthenticated, user } = useAuth();
-  if (!isAuthenticated) return <LoginPage />; 
-  if (roles && !roles.includes(user?.role)) return <DashboardPage />;
-  return children;
-}
 
 function PageWrapper({ isSidebarOpen, toggleSidebar }) {
   return (
@@ -55,43 +44,17 @@ export default function App() {
         <ItemsProvider>
           <CartProvider>
             <Routes>
-              <Route
-                element={
-                  <PageWrapper
-                    isSidebarOpen={isSidebarOpen}
-                    toggleSidebar={toggleSidebar}
-                  />
-                }
-              />
-                <Route path="/" element={<FullpageDashboard />} />
-                <Route path="/items/new" element={<CreateItemPage />} />
-                <Route path="/items/:itemId/edit" element={<UpdateItemPage />} />
+              <Route element={<PageWrapper isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>}>
+                <Route index element={<FullpageDashboard/>}/>
+                <Route path="/items/new" element={<ProtectedRoute roles={["admin","vendor"]}><CreateItemPage /></ProtectedRoute>} />
+                <Route path="/items/:itemId/edit" element={<ProtectedRoute roles={["admin","vendor"]}><UpdateItemPage /></ProtectedRoute>} />
                 <Route path="/items/:itemId" element={<ItemsDetailsPage />} />
                 <Route path="/cart" element={<CartComponent />} />
                 <Route path="/tags/:tag" element={<TagPage />} />
                 <Route path="/auth/register" element={<RegisterPage />} />
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/chatandshop/:roomId?"element={<ChatAndShop />}/>
-                <Route path="/profile"element={<Profile />}>
-
-                {/* what olny can be visite by admin and vendor
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute roles={["admin"]}>
-                      <AdminPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/vendor"
-                  element={
-                    <ProtectedRoute roles={["vendor","admin"]}>
-                      <VendorPage />
-                    </ProtectedRoute>
-                  }
-                />
-                */}
+                <Route path="/profile"element={<ProtectedRoute roles={["admin","vendor","customer"]}><Profile /></ProtectedRoute>} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>
