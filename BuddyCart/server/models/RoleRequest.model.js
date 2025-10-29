@@ -14,4 +14,4 @@ const roleRequestSchema=new mongoose.Schema({
 )
 
 const RoleRequest=mongoose.model("RoleRequest",roleRequestSchema);
-module.exports={RoleRequest}
+module.exports={RoleRequest};
