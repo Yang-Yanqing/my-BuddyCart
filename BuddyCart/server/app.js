@@ -29,6 +29,13 @@ app.use("/api/vendor", require("./routes/vendor.routes"));
 const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
+app.get("/", (req, res) => {
+  res.send("BuddyCart API is running");
+});
+app.get("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
