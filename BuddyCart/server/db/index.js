@@ -1,24 +1,28 @@
-const URI = process.env.MONGO_URI || process.env.MONGODB_URI;
-console.log('MONGO_URI present?', !!process.env.MONGO_URI, 'MONGODB_URI present?', !!process.env.MONGODB_URI);
-if (!URI) {
-  console.error('No Mongo URI found. Set MONGO_URI to your Atlas SRV string.');
-}
+// ℹ️ package responsible to make the connection with mongodb 
+// https://www.npmjs.com/package/mongoose
+const mongoose = require("mongoose");
 
-mongoose.set('strictQuery', true);
-mongoose.connection.on('connected', () => console.log('Mongo connected'));
-mongoose.connection.on('error', (err) => console.error('Mongo error:', err.message));
-mongoose.connection.on('disconnected', () => console.warn('Mongo disconnected'));
+// ℹ️ Sets the MongoDB URI for our app to have access to it.
+// If no env has been set, we dynamically set it to whatever the folder name was upon the creation of the app
+console.log('MONGO_URI exists on boot?', !!process.env.MONGO_URI);
 
-(async () => {
-  try {
-    await mongoose.connect(URI, {
-      serverSelectionTimeoutMS: 10000,
-    });
-    const dbName = mongoose.connection.name;
+const MONGO_URI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/BuddyCart";
+
+mongoose.connect(process.env.MONGO_URI,)
+  .then(() => console.log('✅ Mongo connected'))
+  .catch(err => {
+    console.error('❌ Mongo connect error:', err.name, err.code, err.message);
+  });
+
+console.log('MONGO_URI exists?', !!process.env.MONGO_URI);
+
+mongoose
+  .connect(MONGO_URI)
+  .then((x) => {
+    const dbName = x.connections[0].name;
     console.log(`Connected to Mongo! Database name: "${dbName}"`);
-  } catch (err) {
-    console.error('Mongo connect failed:', err.name, err.message);
-  }
-})();
-
-module.exports = mongoose;
+  })
+  .catch((err) => {
+    console.error("Error connecting to mongo: ", err);
+  });
