@@ -8,6 +8,14 @@ const mongoose = require("mongoose");
 const MONGO_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/BuddyCart";
 
+mongoose.connect(process.env.MONGO_URI,)
+  .then(() => console.log('✅ Mongo connected'))
+  .catch(err => {
+    console.error('❌ Mongo connect error:', err.name, err.code, err.message);
+  });
+
+console.log('MONGO_URI exists?', !!process.env.MONGO_URI);
+
 mongoose
   .connect(MONGO_URI)
   .then((x) => {
