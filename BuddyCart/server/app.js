@@ -52,6 +52,18 @@ const mongoose = require('mongoose');
    res.json({ readyState: mongoose.connection.readyState });
  });
 
+ app.get('/mongotest', (req, res) => {
+  const uri = process.env.MONGO_URI || '';
+  // 脱敏密码
+  const masked = uri.replace(/(\/\/[^:]+:)[^@]+@/, '$1****@');
+  const m = uri.match(/^mongodb\+srv:\/\/[^@]+@([^/]+)\/?([^?]*)/);
+  res.json({
+    hasEnv: !!uri,
+    sample: masked,              // 例：mongodb+srv://user:****@cluster0.xxx.mongodb.net/BuddyCart?...
+    host: m ? m[1] : null,       // 例：cluster0.xxx.mongodb.net
+    dbName: m ? (m[2] || '(none)') : null // 例：BuddyCart
+  });
+});
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
