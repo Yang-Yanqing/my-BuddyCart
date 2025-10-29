@@ -17,10 +17,12 @@ const app = express();
 require("./config")(app);
 
 app.use("/api/admin", require("./routes/admin.routes"));
-app.use("/api/admin/role-requests",require("./routes/adminRoleRequests.routes"));
+app.use("/api/admin/role-requests",require("./routes/roleRequests.routes"));
 app.use("/api/products", require("./routes/product.routes"));
 app.use("/api/auth",require("./routes/auth.routes"));
 app.use("/api/checkout", require("./routes/checkout.routes"));
+app.use("/api/shops", require("./routes/shops.routes"));
+app.use("/api/vendor", require("./routes/vendor.routes"));
 
 
 // 👇 Start handling routes here

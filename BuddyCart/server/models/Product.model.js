@@ -66,9 +66,13 @@ const productSchema=new mongoose.Schema(
     owner:{
       type:mongoose.Schema.Types.ObjectId,
       ref:"User",
-      index:true,
       default:null
-    }
+    },
+    shop:{
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Shop", 
+      default: null, 
+      index: true },  
 
     },{ timestamps: true }
 )

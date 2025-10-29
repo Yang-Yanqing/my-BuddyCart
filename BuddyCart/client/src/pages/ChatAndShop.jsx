@@ -5,24 +5,34 @@ import ChatPage from "./ChatPage";
 
 const ChatAndShop = () => {
   const [open, setOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [shareTick, setShareTick] = useState(0);
 
   return (
     <>
       <ChatAndShopHeader />
 
       <div
-        className="shopchat-grid"
+        className="chat-and-shop"
         style={{
           display: "grid",
           gridTemplateColumns: open ? "1fr min(520px, 38vw)" : "1fr",
-          gap: 16,
+          gap: "16px",
           alignItems: "stretch",
-          padding: 16,
+          padding: "16px",
+          position: "relative",
         }}
       >
-     
-        <section className="card" style={{ padding: 0, overflow: "hidden" }}>
-       
+ 
+        <section
+          className="card"
+          style={{
+            padding: 0,
+            overflow: "hidden",
+            position: "relative",
+            zIndex: 5,
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -43,15 +53,58 @@ const ChatAndShop = () => {
               >
                 {open ? "Hide Chat" : "Show Chat"}
               </button>
+              <button
+                className="btn"
+                disabled={!selectedProduct || !open}
+                title={
+                  !open
+                    ? "Open chat first"
+                    : selectedProduct
+                    ? "Attach selected product"
+                    : "Pick a product"
+                }
+                onClick={() => setShareTick((t) => t + 1)}
+              >
+                Attach to chat
+              </button>
             </div>
           </div>
 
           <div style={{ padding: 16 }}>
-            <DashboardPage />
+            <DashboardPage
+              selectMode
+              selectedId={selectedProduct?._id || selectedProduct?.id || null}
+              onSelect={(item) => setSelectedProduct(item)}
+            />
           </div>
+
+
+          {!open && (
+            <button
+              onClick={() => setOpen(true)}
+              style={{
+                position: "fixed",
+                bottom: 20,
+                right: 20,
+                background: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                width: 60,
+                height: 60,
+                cursor: "pointer",
+                fontSize: 24,
+                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                zIndex: 999,
+              }}
+              title="Open Chat"
+            >
+              💬
+            </button>
+          )}
         </section>
 
-  
+     
         {open && (
           <aside
             className="card"
@@ -59,9 +112,13 @@ const ChatAndShop = () => {
               display: "flex",
               flexDirection: "column",
               minHeight: 0,
+              position: "sticky",
+              top: 16,
+              height: "calc(100vh - 32px)",
+              overflow: "hidden",
+              zIndex: 1,
             }}
           >
-        
             <div
               style={{
                 display: "flex",
@@ -89,17 +146,20 @@ const ChatAndShop = () => {
               </div>
             </div>
 
-    
             <div
               style={{
                 padding: 12,
                 minHeight: 0,
                 display: "flex",
                 flex: 1,
+                overflow: "auto",
               }}
             >
               <div style={{ flex: 1, minHeight: 0, width: "100%" }}>
-               <ChatPage />
+                <ChatPage
+                  selectedProduct={selectedProduct}
+                  shareTick={shareTick}
+                />
               </div>
             </div>
           </aside>

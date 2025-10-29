@@ -3,23 +3,36 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useItems } from "../context/ItemsContext";
 import { useAuth } from "../context/AuthContext";
-import productId from "../utils/productId"
+import productId from "../utils/productId";
 import { useCart } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
+import { useTheme } from "../context/UserContext";
 
-
-const ListItem = () => {
-  const {user}=useAuth();
+const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const { items,setItems } = useItems();
+  const { items, setItems } = useItems();
   const { addToCart } = useCart();
-  const { role,toggleRole } = useUser();
+  const { role, toggleRole } = useUser();
+  const { setRgb } = useTheme();
 
   const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+  async function sendClick(item) {
+    try {
+      if (!item) return;
+      const res = await axios.post("/api/auth/me/click", {
+        title: item?.title,
+        category: item?.category,
+      });
+      const data = res?.data;
+      if (data?.rgb) setRgb(data.rgb);
+    } catch (_e) {}
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -27,12 +40,11 @@ const ListItem = () => {
       try {
         setLoading(true);
         const { data } = await axios.get("/api/products", {
-          params: { page, limit, _: Date.now() }, 
+          params: { page, limit, _: Date.now() },
           headers: { "Cache-Control": "no-cache" },
         });
 
         if (ignore) return;
-
         const list = data?.products ?? data?.items ?? data?.data ?? [];
         const count = data?.total ?? data?.totalDocs ?? data?.count ?? list.length;
 
@@ -47,14 +59,16 @@ const ListItem = () => {
       }
     };
     fetchItems();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [page, limit, setItems, setTotal]);
 
   useEffect(() => {
     const tp = Math.max(Math.ceil(total / limit), 1);
     if (page > tp) setPage(tp);
-  }, [total, limit]); 
- 
+  }, [total, limit]);
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
@@ -69,53 +83,55 @@ const ListItem = () => {
 
   return (
     <div style={{ padding: 20 }}>
-       <div
-        style={{
-          position: "sticky",
-          top: 0,
-          background: "#f8fafc",
-          zIndex: 10,
-          padding: "12px 16px",
-          borderRadius: 10,
-          marginBottom: 20,
-          boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <button
-          onClick={toggleRole}
+      {!selectMode && (
+        <div
           style={{
-            padding: "8px 14px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-            background: role==="admin"?"#2563eb":"#9ca3af",
-            color: "white",
-            fontWeight: 600,
-            fontSize: 14,
+            position: "sticky",
+            top: 0,
+            background: "#f8fafc",
+            zIndex: 10,
+            padding: "12px 16px",
+            borderRadius: 10,
+            marginBottom: 20,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          Current Role: {role==="admin"?"Admin":"Customer"} (click to switch)
-        </button>
-
-        {user?.role === "admin" && (
-          <Link
-            to="/items/new"
+          <button
+            onClick={toggleRole}
             style={{
-              padding: "8px 12px",
+              padding: "8px 14px",
               borderRadius: 8,
-              background: "#2563eb",
-              color: "#fff",
-              textDecoration: "none",
+              border: "none",
+              cursor: "pointer",
+              background: role === "admin" ? "#2563eb" : "#9ca3af",
+              color: "white",
               fontWeight: 600,
+              fontSize: 14,
             }}
           >
-            + New Item
-          </Link>
-        )}
-      </div>
+            Current Role: {role === "admin" ? "Admin" : "Customer"} (click to switch)
+          </button>
+
+          {user?.role === "admin" && (
+            <Link
+              to="/items/new"
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                background: "#2563eb",
+                color: "#fff",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              + New Item
+            </Link>
+          )}
+        </div>
+      )}
 
       {loading && <p>Loading…</p>}
       {!loading && (!items || items.length === 0) && <p>No items found.</p>}
@@ -129,7 +145,7 @@ const ListItem = () => {
           }}
         >
           {items.map((item) => {
-            const uid=productId(item);
+            const uid = productId(item);
             if (!uid) return null;
 
             return (
@@ -145,18 +161,24 @@ const ListItem = () => {
                   justifyContent: "space-between",
                   transition: "transform 0.2s, boxShadow 0.2s",
                   cursor: "pointer",
+                  border:
+                    selectedId === uid
+                      ? "2px solid #2563eb"
+                      : "2px solid transparent",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 12px rgba(0,0,0,0.15)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "none";
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(0,0,0,0.1)";
                 }}
               >
                 <Link
-                  to={`/items/${uid}`}
+                  to={selectMode ? "#" : `/items/${uid}`}
                   style={{
                     textDecoration: "none",
                     color: "inherit",
@@ -164,13 +186,24 @@ const ListItem = () => {
                     flexDirection: "column",
                     alignItems: "center",
                     gap: 10,
+                    pointerEvents: "auto",
                   }}
-                  aria-label={`View details for ${item?.title ?? "item"}`}
+                  onClick={(e) => {
+                    if (selectMode) {
+                      e.preventDefault();
+                      onSelect?.(item);
+                    }
+                    sendClick(item);
+                  }}
                 >
                   <img
                     src={item?.thumbnail}
                     alt={item?.title ?? "item thumbnail"}
-                    style={{ width: "100%", height: 180, objectFit: "contain" }}
+                    style={{
+                      width: "100%",
+                      height: 180,
+                      objectFit: "contain",
+                    }}
                     loading="lazy"
                   />
                   <h3
@@ -189,30 +222,78 @@ const ListItem = () => {
                   >
                     {item?.title}
                   </h3>
-                  <p style={{ color: "#743b3bff", fontWeight: "bold", fontSize: 18, margin: 0 }}>
-                    {Number.isFinite(Number(item?.price)) ? `€${Number(item.price).toFixed(2)}` : "--"}
+                  <p
+                    style={{
+                      color: "#743b3bff",
+                      fontWeight: "bold",
+                      fontSize: 18,
+                      margin: 0,
+                    }}
+                  >
+                    {Number.isFinite(Number(item?.price))
+                      ? `€${Number(item.price).toFixed(2)}`
+                      : "--"}
                   </p>
                 </Link>
 
-                <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <button
-                    onClick={async ()=>{addToCart(item);
-                      try{await axios.post("/api/auth/me/click", {title:item?.title,category:item?.category});}
-                      catch{}}}>
-                    Add to Cart
-                  </button>
+                <div
+                  style={{
+                    marginTop: 10,
+                    display: "flex",
+                    gap: 8,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                  }}
+                >
+                  {!selectMode && (
+                    <button
+                      onClick={async () => {
+                        addToCart(item);
+                        await sendClick(item);
+                      }}
+                    >
+                      Add to Cart
+                    </button>
+                  )}
 
-                  {role === "admin" && (
+                  <button
+                  onClick={() => {
+                   window.dispatchEvent(new CustomEvent("share-to-showcase", { detail: item }));
+                    }}
+                  style={{
+                  padding: "6px 10px",
+                  border: "1px solid #ddd",
+                  borderRadius: 6,
+                  background: "#f0f9ff",
+                  cursor: "pointer",
+                  }}
+                  >
+                        Share to Chat
+                    </button>
+
+                  {!selectMode && role === "admin" && (
                     <>
                       <Link
                         to={`/items/${uid}/edit`}
-                        style={{ padding: "6px 10px", border: "1px solid #ddd", borderRadius: 6, textDecoration: "none", color: "#111" }}
+                        style={{
+                          padding: "6px 10px",
+                          border: "1px solid #ddd",
+                          borderRadius: 6,
+                          textDecoration: "none",
+                          color: "#111",
+                        }}
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(uid)}
-                        style={{ padding: "6px 10px", background: "#e11d48", color: "#fff", border: 0, borderRadius: 6 }}
+                        style={{
+                          padding: "6px 10px",
+                          background: "#e11d48",
+                          color: "#fff",
+                          border: 0,
+                          borderRadius: 6,
+                        }}
                       >
                         Delete
                       </button>
@@ -231,22 +312,15 @@ const ListItem = () => {
 
       <div style={{ marginTop: 20, textAlign: "center" }}>
         <button
-          onClick={()=>{
-            setPage((p)=>{
-              const next=Math.max(p - 1, 1);
-              if (next!==p) window.scrollTo({ top: 0, behavior: "smooth" });
+          onClick={() => {
+            setPage((p) => {
+              const next = Math.max(p - 1, 1);
+              if (next !== p)
+                window.scrollTo({ top: 0, behavior: "smooth" });
               return next;
             });
           }}
           disabled={page === 1}
-          style={{
-            marginRight: 10,
-            padding: "8px 14px",
-            borderRadius: 5,
-            border: "1px solid #ccc",
-            backgroundColor: page === 1 ? "#eee" : "#fff",
-            cursor: page === 1 ? "not-allowed" : "pointer",
-          }}
         >
           ← Prev
         </button>
@@ -260,44 +334,15 @@ const ListItem = () => {
             setPage((p) => {
               const tp = Math.max(Math.ceil(total / limit), 1);
               const next = Math.min(p + 1, tp);
-              if (next !== p) window.scrollTo({ top: 0, behavior: "smooth" });
+              if (next !== p)
+                window.scrollTo({ top: 0, behavior: "smooth" });
               return next;
             });
           }}
           disabled={page === totalPages}
-          style={{
-            marginLeft: 10,
-            padding: "8px 14px",
-            borderRadius: 5,
-            border: "1px solid #ccc",
-            backgroundColor: page === totalPages ? "#eee" : "#fff",
-            cursor: page === totalPages ? "not-allowed" : "pointer",
-          }}
         >
           Next →
         </button>
-
-        <select
-          value={limit}
-          onChange={(e) => {
-            setLimit(Number(e.target.value));
-            setPage(1);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          style={{
-            marginLeft: 12,
-            padding: "6px 8px",
-            borderRadius: 4,
-            border: "1px solid #ccc",
-          }}
-          aria-label="Items per page"
-        >
-          {[12, 15, 20, 30, 50].map((n) => (
-            <option key={n} value={n}>
-              {n} / page
-            </option>
-          ))}
-        </select>
       </div>
     </div>
   );

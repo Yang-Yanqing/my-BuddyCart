@@ -12,11 +12,16 @@ process.env.REACT_APP_SOCKET_URL||
 const NAMESPACE="/chat"; 
 const SOCKET_PATH="/socket.io";   
 
-const ChatPage=()=>{
+const ChatPage=({selectedProduct, shareTick})=>{
     const {token,user,isAuthenticated,logOut}=useAuth();
     const {roomId:roomParam}=useParams();
 
     const roomId=roomParam||"lobby"
+    
+    const displayName = useMemo(
+     () => (user?.name || user?.displayName || user?.username || (user?.email ? user.email.split("@")[0] : null) || "Guest"),
+      [user]
+    );
 
     const[copied,setCopied]=useState(false);
     
@@ -51,7 +56,8 @@ const ChatPage=()=>{
     if(!roomId)return;
 
       const socket=io(`${SOCKET_URL}${NAMESPACE}`,{
-        auth:{token},
+        auth:{token,name: displayName},
+        query:{roomId},
         transports:["websocket"],
         reconnection: true,
         reconnectionAttempts:5,
@@ -80,9 +86,32 @@ const ChatPage=()=>{
       socket.disconnect();
       socketRef.current = null;
       setConnected(false);
-    };}, [roomId, token, isAuthenticated, logOut]);
+    };}, [roomId, token, isAuthenticated, logOut,displayName]);
+   useEffect(()=>{
+    if (!shareTick) return;                 
+    if (!selectedProduct) return;
+    if (!connected) return;
+    const socket = socketRef.current;
+    if (!socket) return;
+    
+    socket.emit("showcase:set", { item: selectedProduct });
 
-  
+    
+  }, [shareTick, selectedProduct, connected]);
+ 
+useEffect(() => {
+  const handler = (e) => {
+    const item = e.detail;
+    if (item && socketRef.current) {
+      socketRef.current.emit("showcase:set", { item });
+    } else {
+      alert("Chat not connected yet — open chat first!");
+    }
+  };
+  window.addEventListener("share-to-showcase", handler);
+  return () => window.removeEventListener("share-to-showcase", handler);
+}, []);
+
     useEffect(()=>{
         const socket=socketRef.current;
         if (!socket) return;
@@ -169,6 +198,47 @@ return(
                           onClearMine={clearMine}
                           onClearPeer={clearPeer}
                           onRate={rate}/>
+        
+<div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap", alignItems: "center" }}>
+  {["😍", "😊", "😮", "😡", "💩"].map((emo) => (
+    <button
+      key={emo}
+      onClick={() => onSend(emo)} 
+      style={{
+        fontSize: 22,
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+      }}
+      title={`Send ${emo}`}
+    >
+      {emo}
+    </button>
+  ))}
+
+
+  <button
+    onClick={() => {
+      if (!connected) {
+        alert("Chat not connected yet — open chat first!");
+        return;
+      }
+      if (!myItem) {
+        alert("Please share a product first before scoring it.");
+        return;
+      }
+  
+      onSend("⭐ I scored my shared item!");
+    
+      socketRef.current?.emit("showcase:rate", { target: myItem, rating: "⭐" });
+    }}
+    className="btn"
+    style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 6 }}
+  >
+    Score me item
+  </button>
+</div>
+
         </div>
     </main>
 )

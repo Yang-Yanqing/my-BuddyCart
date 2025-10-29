@@ -45,7 +45,7 @@ async function deleteProduct(req,res,next) {
     const {id}=req.params;
     let result;
     if(req.user.role==="admin"){
-      result=await Product.findByIdAndUpdate(id);
+      result=await Product.findByIdAndDelete(id);
     }else{
       result=await Product.findByIdAndDelete({_id:id,owner:req.user.id});
     }

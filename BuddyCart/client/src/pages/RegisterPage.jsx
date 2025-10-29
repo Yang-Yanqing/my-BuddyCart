@@ -24,8 +24,10 @@ const onChange=(e)=>{
 const toBackend=async (e)=>{
     e.preventDefault();
     try {
-        const {name,email,password,role}=auth;
-        const res=await axios.post(`${API_BASE}/api/auth/register`,{name,email,password,desiredRole:role});
+        const {name,email,password,role,profileImage}=auth;
+        const payload = { name,email,password,profileImage };
+        if (role==="vendor"||role==="admin")payload.desiredRole=role;
+        const res=await axios.post(`${API_BASE}/api/auth/register`,payload);
         console.log("Registered:", res.data);
         alert("Registration successful!");
     } catch (error) {
