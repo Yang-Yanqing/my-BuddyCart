@@ -41,6 +41,17 @@ const mongoose = require('mongoose');
    res.json({ readyState: mongoose.connection.readyState });
  });
 
+  app.get('/envz', (req, res) => {
+   res.json({
+     has_MONGO_URI: !!process.env.MONGO_URI,
+     has_MONGODB_URI: !!process.env.MONGODB_URI
+   });
+ });
+ app.get('/dbz', (req, res) => {
+   const mongoose = require('mongoose');
+   res.json({ readyState: mongoose.connection.readyState });
+ });
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
