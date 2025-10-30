@@ -16,21 +16,22 @@ const app = express();
 
  const allowedOrigins = [
    'http://localhost:3000',
-   'https://buddycart-client.netlify.app'
+   'https://buddycart-client.netlify.app',
+   'https://buddycart.fly.dev'    
  ];
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
-app.use(
-   cors({origin: function (origin, cb) {
-       if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-       return cb(new Error('Not allowed by CORS'));
-     },
-     credentials: true,
-     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-     allowedHeaders: ['Content-Type', 'Authorization'],
-   })
- );
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
+}));
+
+app.options(/.*/, cors());
+
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/admin/role-requests",require("./routes/roleRequests.routes"));
 app.use("/api/products", require("./routes/product.routes"));
@@ -62,10 +63,7 @@ const mongoose = require('mongoose');
      has_MONGODB_URI: !!process.env.MONGODB_URI
    });
  });
- app.get('/dbz', (req, res) => {
-   const mongoose = require('mongoose');
-   res.json({ readyState: mongoose.connection.readyState });
- });
+
 
  app.get('/mongotest', (req, res) => {
   const uri = process.env.MONGO_URI || '';

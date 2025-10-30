@@ -9,11 +9,11 @@ const {register,
   updateMe}=require("../controllers/auth.control");
 
 const {requireAuth,requireRole} = require("../middleware/requireAuth");
-const {User}=require("../models/User.model")
+const User=require("../models/User.model")
 
 
 router.post('/register',register);
-router.post('/logIn',loginUser);
+router.post('/login',loginUser);
 router.put('/update/:id', requireAuth, requireRole('admin'), updateUser);
 router.delete('/remove/:id', requireAuth, requireRole('admin'), deleteUser);
 

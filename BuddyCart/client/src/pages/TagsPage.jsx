@@ -1,13 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../config/api";
 
 export default function TagPage() {
   const { tag } = useParams();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+
     async function loadProducts() {
-      const res = await fetch(`/api/products?category=${encodeURIComponent(tag)}&limit=60`);
+      const res = await fetch(
+  `${API_BASE.replace(/\/+$/, "")}/api/products?category=${encodeURIComponent(tag)}&limit=60`,
+  { headers: { "Cache-Control": "no-cache" }});
       const data = await res.json();
       setProducts(data.products || []);
     }
@@ -32,4 +36,4 @@ export default function TagPage() {
       )}
     </div>
   );
-}
+};

@@ -4,15 +4,22 @@ const User=require("../models/User.model")
 function requireAuth(req,res,next) {
   const header = req.headers.authorization || "";
   const [scheme, token] = header.split(" ");
-  if (scheme !== "Bearer" || !token) {
+  if (!/^Bearer$/i.test(scheme) || !token) {
     return res.status(401).json({ message: "Unauthorized: missing token" });
   }
 
   try {
     const decoded=verifyAccessToken(token);
-    User.findById(decoded.id).select("role").lean().then(dbUser=>{
+
+    User.findById(decoded.id).select("role name email profileImage").lean().then(dbUser=>{
     if (!dbUser) return res.status(401).json({ message: "Unauthorized: user not found" });
-        req.user={ id: decoded.id,role: decoded.role };
+        req.user={ 
+          id:decoded.id,
+          role:dbUser.role, 
+          name:dbUser.name,
+          email:dbUser.email,
+          profileImage:dbUser.profileImage || ""
+        };
     return next();
   }) .catch(()=>res.status(401).json({message: "Unauthorized: user lookup failed" }));}  
   catch (err) {
@@ -30,4 +37,4 @@ return next();
 }
 }
 
-module.exports={requireAuth,requireRole}
+module.exports={requireAuth,requireRole};

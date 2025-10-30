@@ -1,8 +1,7 @@
-// utils/seed.js
-const { Product } = require("../models/Product.model");
+const {Product} = require("../models/Product.model");
 
 async function seedIfEmpty() {
-  const count = await Product.countDocuments();
+  const count=await Product.countDocuments();
   if (count > 0) return 0; 
 
 
@@ -27,4 +26,4 @@ async function seedIfEmpty() {
   return docs.length;
 }
 
-module.exports = { seedIfEmpty };
+module.exports={seedIfEmpty};

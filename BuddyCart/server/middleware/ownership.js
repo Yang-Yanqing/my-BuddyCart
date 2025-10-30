@@ -18,4 +18,4 @@ function requireOwnership(model, idParam = "id", ownerPath = "owner"){
    };
  };
 
-module.exports=requireOwnership
+module.exports=requireOwnership;

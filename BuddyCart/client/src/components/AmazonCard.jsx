@@ -79,4 +79,4 @@ export default function AmazonCard({
     );
   }
   return <article className={`amazon-card ${className}`}>{inner}</article>;
-}
+};

@@ -123,4 +123,4 @@ export default function ItemEditPage() {
       </form>
     </main>
   );
-}
+};

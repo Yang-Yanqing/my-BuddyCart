@@ -6,4 +6,4 @@ const getProducts=async (effectiveLimit,skip) =>{
 } 
    catch(err){console.error("We have trouble with the Api item");throw err} }
 
-   module.exports={getProducts}
+   module.exports={getProducts};

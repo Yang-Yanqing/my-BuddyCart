@@ -5,14 +5,10 @@ import ChatMessages from "../components/ChatMessages";
 import ShowcasePanel from "../components/ShowcasePanel";
 import {useAuth} from "../context/AuthContext";
 import {useParams} from "react-router-dom";
+import {SOCKET_URL, SOCKET_PATH} from "../config/api";
 
-const SOCKET_URL =
-   process.env.REACT_APP_SOCKET_URL ||
-   (process.env.NODE_ENV === "development"
-     ? "http://localhost:5005"
-     : "https://buddycart-server.onrender.com");
- const NAMESPACE = "/chat";
- const SOCKET_PATH = "/socket.io";   
+
+ const NAMESPACE = "/chat";   
 
 const ChatPage=({selectedProduct, shareTick})=>{
     const {token,user,isAuthenticated,logOut}=useAuth();
@@ -58,6 +54,7 @@ const ChatPage=({selectedProduct, shareTick})=>{
     if(!roomId)return;
 
     const socket = io(`${SOCKET_URL}${NAMESPACE}`, {
+        transports: ["websocket"],
         auth: { token, name: displayName, avatar: user?.profileImage || null },
         query: { roomId, token },
         reconnection: true,
@@ -90,10 +87,7 @@ const ChatPage=({selectedProduct, shareTick})=>{
       setConnected(false);
     };}, [roomId, token, isAuthenticated, logOut,displayName]);
 
-    useEffect(() => {
-      if (!token || !isAuthenticated || !roomId) return;
-
-      }, [roomId, token, isAuthenticated, logOut, displayName]);
+  
 
    useEffect(()=>{
     if (!shareTick) return;                 

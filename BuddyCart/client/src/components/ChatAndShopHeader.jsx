@@ -38,4 +38,4 @@ Profile
 );
 }
 
-export default ChatAndShopHeader
+export default ChatAndShopHeader;

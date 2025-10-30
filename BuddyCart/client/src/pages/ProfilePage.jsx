@@ -29,6 +29,17 @@ const ProfilePage = () => {
       </div>
     );
 
+  const fallbackInitial = (user?.name || user?.email || "U")[0]?.toUpperCase?.() || "U";
+ const avatarSize = 88;
+  const avatarStyle = {
+    width: avatarSize,
+    height: avatarSize,
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "2px solid rgba(0,0,0,0.06)",
+    background: "#f3f4f6"
+  };
+
   const handleSave = async () => {
   try {
     setLoading(true);
@@ -111,9 +122,31 @@ const ProfilePage = () => {
             fontWeight: 600,
           }}
         >
+          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+        {user?.profileImage ? (
+          <img
+            src={user.profileImage}
+            alt="avatar"
+            style={avatarStyle}
+            onError={(e)=>{ e.currentTarget.style.display="none"; }}
+          />
+        ) : (
+          <div style={{
+            ...avatarStyle,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontWeight:700, fontSize:28, color:"#555"
+          }}>
+            {fallbackInitial}
+          </div>
+        )}
+        <div>
+          <div style={{ fontSize:18, fontWeight:600 }}>{user?.name || "Unnamed User"}</div>
+          <div style={{ color:"#666", marginTop:4 }}>{user?.email}</div>
           {user?.name?.[0]?.toUpperCase() ||
             user?.email?.[0]?.toUpperCase() ||
             "?"}
+        </div>
+        </div>
         </div>
 
         <h2 style={{ margin: "0 0 4px", fontSize: 22, color: "#111" }}>

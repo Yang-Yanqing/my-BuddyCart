@@ -10,11 +10,7 @@ export const AuthProvider=({children})=>{
     const[user,setUser]=useState(null);
     const[token,setToken]=useState(localStorage.getItem("token") || null)
 
-// const API_BASE=(typeof import.meta!=="undefined"&&import.meta.env&&process.env.REACT_APP_API_BASE_URL)||
-// process.env.REACT_APP_SERVER_URL||
-// (process.env.NODE_ENV==="development" ? "http://localhost:5005" : "https://buddycart-server.onrender.com");
-
-useEffect(() => {axios.defaults.baseURL=API_BASE;},[API_BASE]);
+useEffect(() => {axios.defaults.baseURL=API_BASE.replace(/\/+$/, "");},[]);
 
 
 useEffect(()=>{

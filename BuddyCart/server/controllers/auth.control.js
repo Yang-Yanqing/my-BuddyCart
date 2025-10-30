@@ -98,7 +98,11 @@ const loginUser = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    const token = signAccessToken({ id: user._id, role: user.role });
+    const token = signAccessToken({ 
+      id: user._id, role: user.role,
+      name: user.name,
+      email: user.email,
+      profileImage: user.profileImage || "", });
 
     return res.status(200).json({
       token,
@@ -119,7 +123,7 @@ const loginUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    let { name, email, password, profileImage, role } = req.body || {};
+    let { name, email, password, profileImage, } = req.body || {};
 
     if (!id) return res.status(400).json({ message: "id param is required." });
 
@@ -137,7 +141,6 @@ const updateUser = async (req, res, next) => {
     }
 
 
-    if (role) update.role = String(role);
 
     const updated = await User.findByIdAndUpdate(id, update, {
       new: true,

@@ -23,6 +23,7 @@ import { CartProvider } from "./context/CartContext";
 import { UserProvider } from "./context/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute"
 import { ThemeProvider } from "../src/context/UserContext"
+import AboutPage from "./pages/AboutPage/AboutPage";
 
 
 function PageWrapper({ isSidebarOpen, toggleSidebar }) {
@@ -63,6 +64,7 @@ export default function App() {
                 <Route path="/vendor" element={<ProtectedRoute roles={["vendor"]}><VendorDashboard /></ProtectedRoute>}/>
                  <Route path="/chat" element={<ChatAndShop/>}/>
                <Route path="/my-shop" element={<ProtectedRoute roles={["vendor"]}><MyShopPage/></ProtectedRoute>}/>
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

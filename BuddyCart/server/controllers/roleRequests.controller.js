@@ -1,7 +1,7 @@
 
 const mongoose = require("mongoose");
 const { RoleRequest } = require("../models/RoleRequest.model");
-const { User } = require("../models/User.model");
+const User = require("../models/User.model");
 const { notifyApplicantResult } = require("../db/mailer"); 
 
 

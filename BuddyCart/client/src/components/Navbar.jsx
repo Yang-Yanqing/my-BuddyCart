@@ -54,7 +54,7 @@ export default function Navbar() {
           gap: 12,
         }}
       >
-
+        {/* 左：Logo */}
         <div>
           <Link
             to="/"
@@ -86,7 +86,7 @@ export default function Navbar() {
           </Link>
         </div>
 
- 
+        {/* 中：分类 */}
         <nav style={{ justifySelf: "center", position: "relative" }}>
           <div
             onMouseEnter={() => setCatOpen(true)}
@@ -106,6 +106,7 @@ export default function Navbar() {
             >
               Browse
             </span>
+
             {catOpen && (
               <div
                 style={{
@@ -153,6 +154,7 @@ export default function Navbar() {
           </div>
         </nav>
 
+        {/* 右：操作区 */}
         <div
           style={{
             justifySelf: "end",
@@ -185,26 +187,48 @@ export default function Navbar() {
             Cart
           </NavLink>
 
-            {user ? (
+          <NavLink to="/about" className="nav-link">
+          About
+         </NavLink>
+
+          {user ? (
             <>
-              <div
-                onClick={handleProfileClick}
-                title="Profile"
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: "50%",
-                  display: "grid",
-                  placeItems: "center",
-                  background: "linear-gradient(180deg,#ffe8e0,#ffd6f2)",
-                  color: "#222",
-                  fontWeight: 700,
-                  border: "1px solid rgba(0,0,0,0.08)",
-                  cursor: "pointer",
-                }}
-              >
-                {user?.name?.[0]?.toUpperCase() || "U"}
-              </div>
+              {user.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="me"
+                  onClick={handleProfileClick}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: "1px solid rgba(0,0,0,0.08)",
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div
+                  onClick={handleProfileClick}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    background: "#e5e7eb",
+                    color: "#111",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                  }}
+                >
+                  {(user?.name || user?.email || "U")[0].toUpperCase()}
+                </div>
+              )}
               <button
                 onClick={handleLogout}
                 style={{
@@ -254,4 +278,4 @@ export default function Navbar() {
       </div>
     </header>
   );
-}
+};

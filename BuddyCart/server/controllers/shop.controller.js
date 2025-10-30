@@ -55,4 +55,4 @@ async function adminDeleteShop(req, res, next){
     updateMyShop,
     adminListShops,
     adminDeleteShop
- }
+ };

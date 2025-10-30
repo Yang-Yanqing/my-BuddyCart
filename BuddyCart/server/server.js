@@ -10,14 +10,15 @@ const {seedIfEmpty}=require("./db/seed");
 const server=http.createServer(app);
 const allowedOrigins = [
    "http://localhost:3000",
-   "https://buddycart-client.netlify.app"
+   "https://buddycart-client.netlify.app",
+   "https://buddycart.fly.dev" 
  ];
 
 const io=new Server(server, {
    cors:{
-     origin:allowedOrigins,
-     credentials:true,
-     methods:["GET", "POST"]
+     origin: allowedOrigins,
+     credentials: true,
+     methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
    },
    path: "/socket.io"
  });

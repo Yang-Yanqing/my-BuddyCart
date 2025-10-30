@@ -28,7 +28,7 @@ async function updateProduct(req,res,next) {
       result=await Product.findByIdAndUpdate(
         {_id:id,owner:req.user.id},
         update,
-        {new:true}
+        {new:true,runValidators:true}
       )
     }
 
@@ -47,7 +47,7 @@ async function deleteProduct(req,res,next) {
     if(req.user.role==="admin"){
       result=await Product.findByIdAndDelete(id);
     }else{
-      result=await Product.findByIdAndDelete({_id:id,owner:req.user.id});
+      result=await Product.findOneAndDelete({_id:id,owner:req.user.id});
     }
 
     if(!result){return res.status(404).json({error:"Not found or no permission"})}

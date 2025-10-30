@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config/api";
 
 
 
@@ -17,7 +18,7 @@ export default function PaypalReturn() {
 
     (async () => {
       try {
-        const r = await fetch(`${API_BASE}/api/checkout/capture-order`, {
+        const r = await fetch(`${API_BASE.replace(/\/+$/, "")}/api/checkout/capture-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderID }),
@@ -33,4 +34,4 @@ export default function PaypalReturn() {
   }, []);
 
   return <div style={{ padding: 24 }}>{msg}</div>;
-}
+};
