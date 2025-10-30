@@ -3,6 +3,7 @@ require('dotenv').config();
 const {Server}=require("socket.io")
 const http=require("http")
 const app = require("./app");
+const {seedIfEmpty} = require("./utils/seed");
 
 const server=http.createServer(app);
 const allowedOrigins = [
@@ -25,7 +26,19 @@ const PORT = process.env.PORT || 5005;
 
 
 
-server.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+  console.log(`Server listening on ${HOST}:${PORT}`);
+  if (process.env.SEED_ON_START === "true") {
+    try {
+      const inserted = await seedIfEmpty();
+      if (inserted) {
+        console.log(`[seed] inserted ${inserted} demo products`);
+      } else {
+        console.log("[seed] skipped (already have products)");
+      }
+    } catch (e) {
+      console.error("[seed] failed:", e?.message);
+    }
+  }
 });
 module.exports = {server, io, app};
