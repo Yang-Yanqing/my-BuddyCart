@@ -6,11 +6,13 @@ import ShowcasePanel from "../components/ShowcasePanel";
 import {useAuth} from "../context/AuthContext";
 import {useParams} from "react-router-dom";
 
-const SOCKET_URL=(typeof import.meta!=="undefined"&&import.meta.env &&import.meta.env.VITE_SOCKET_URL)||
-process.env.REACT_APP_SOCKET_URL||
-"https://buddycart-server.onrender.com";  
-const NAMESPACE="/chat"; 
-const SOCKET_PATH="/socket.io";   
+const SOCKET_URL =
+   process.env.REACT_APP_SOCKET_URL ||
+   (process.env.NODE_ENV === "development"
+     ? "http://localhost:5005"
+     : "https://buddycart-server.onrender.com");
+ const NAMESPACE = "/chat";
+ const SOCKET_PATH = "/socket.io";   
 
 const ChatPage=({selectedProduct, shareTick})=>{
     const {token,user,isAuthenticated,logOut}=useAuth();

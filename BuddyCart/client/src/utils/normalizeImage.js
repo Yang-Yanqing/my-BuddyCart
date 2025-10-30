@@ -7,7 +7,7 @@ export function normalizeImage(url) {
     return clean;
   }
 
-  const base=import.meta.env.VITE_SERVER_URL|| "";
+  const base=process.env.REACT_APP_API_BASE_URL|| "";
   if (base) {
     return `${base.replace(/\/$/, "")}/${clean.replace(/^\//, "")}`;
   }

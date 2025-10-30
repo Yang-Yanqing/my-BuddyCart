@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import {useAuth} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
+import {API_BASE} from "../config/api";
 
-const API_BASE=(typeof import.meta!=="undefined"&&
-    import.meta.env&&import.meta.env.VITE_SERVER_URL) ||
- process.env.REACT_APP_SERVER_URL ||
- (process.env.NODE_ENV==="development" ? 
-    "http://localhost:5005" : 
-    "https://your-api.onrender.com");
+
 
 
 const loginForm={
