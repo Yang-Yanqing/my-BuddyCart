@@ -3,7 +3,7 @@ require('dotenv').config();
 const {Server}=require("socket.io")
 const http=require("http")
 const app = require("./app");
-const {seedIfEmpty} = require("./utils/seed");
+const {seedIfEmpty}=require("./db/seed");
 
 const server=http.createServer(app);
 const allowedOrigins = [
