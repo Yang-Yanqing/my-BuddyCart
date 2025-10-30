@@ -7,10 +7,10 @@ export function normalizeImage(url) {
     return clean;
   }
 
-  const base = import.meta.env.VITE_SERVER_URL || "";
+  const base=import.meta.env.VITE_SERVER_URL|| "";
   if (base) {
     return `${base.replace(/\/$/, "")}/${clean.replace(/^\//, "")}`;
   }
 
   return "https://placekitten.com/120/120";
-}
+};

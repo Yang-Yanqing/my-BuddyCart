@@ -14,7 +14,7 @@ const { requireAuth } = require("../middleware/requireAuth");
 const { requireRole } = require("../middleware/requireAuth");
 
 
-router.post("/", requireAuth, createRoleRequest);
+router.post("/", requireAuth,requireRole("admin"),createRoleRequest);
 
 
 router.get("/", requireAuth, requireRole("admin"), listRoleRequests);

@@ -1,34 +1,31 @@
-// server/controllers/auth.control.js
 const User = require("../models/User.model");
-const { signAccessToken } = require("../middleware/jwt");
-const { RoleRequest } = require("../models/RoleRequest.model");
-const { notifyAdminsNewRoleRequest } = require("../db/mailer");
+const {signAccessToken} = require("../middleware/jwt");
+const {RoleRequest} = require("../models/RoleRequest.model");
+const {notifyAdminsNewRoleRequest} = require("../db/mailer");
 const bcrypt = require("bcryptjs");
 
 const ALLOWED_TARGET_ROLES = ["vendor", "admin"];
 
-// 注册
-const register = async (req, res, next) => {
+const register=async(req, res, next)=>{
   try {
     let { name, email, password, desiredRole, profileImage } = req.body;
     if (!name || !email || !password) {
       return res
         .status(400)
-        .json({ message: "name, email, password are required." });
+        .json({message: "name, email, password are required."});
     }
 
-    email = String(email).trim().toLowerCase();
+    email=String(email).trim().toLowerCase();
 
-    const emailExisting = await User.findOne({ email });
+    const emailExisting=await User.findOne({ email });
     if (emailExisting) {
       return res.status(409).json({ message: "Email already registered." });
     }
 
     const payload = { name, email };
 
-    // 哈希密码（若模型已有 pre-save 哈希，请删掉此段）
-    const salt = await bcrypt.genSalt(10);
-    payload.password = await bcrypt.hash(String(password), salt);
+ 
+    payload.password=String(password);
 
     if (typeof profileImage === "string" && profileImage.trim() !== "") {
       payload.profileImage = profileImage.trim();
@@ -36,7 +33,6 @@ const register = async (req, res, next) => {
 
     const newUser = await User.create(payload);
 
-    // 如果用户在注册时申请 vendor/admin，生成 RoleRequest
     if (["vendor", "admin"].includes(desiredRole)) {
       const roleRequest = await RoleRequest.create({
         user: newUser._id,
@@ -84,11 +80,9 @@ const register = async (req, res, next) => {
 };
 
 const verifyUser = async (req, res, next) => {
-  // 预留占位（若暂不需要可忽略）
   return res.status(501).json({ message: "Not implemented." });
 };
 
-// 登录
 const loginUser = async (req, res, next) => {
   try {
     let { email, password } = req.body || {};
@@ -122,7 +116,6 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// 管理端更新任意用户
 const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -134,10 +127,8 @@ const updateUser = async (req, res, next) => {
     if (name) update.name = String(name);
     if (email) update.email = String(email).trim().toLowerCase();
 
-    // 若要改密码则哈希（若模型已有 pre 钩子，请删掉此段）
     if (password) {
-      const salt = await bcrypt.genSalt(10);
-      update.password = await bcrypt.hash(String(password), salt);
+      update.password=String(password);
     }
 
     if (typeof profileImage === "string") {
@@ -145,7 +136,7 @@ const updateUser = async (req, res, next) => {
       if (val !== "") update.profileImage = val;
     }
 
-    // 可选：允许管理端改角色（自行按权限中间件保护此接口）
+
     if (role) update.role = String(role);
 
     const updated = await User.findByIdAndUpdate(id, update, {
@@ -165,7 +156,7 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// 删除用户
+
 const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -184,7 +175,7 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-// 申请/复用角色请求
+
 const createOrReuseRoleRequest = async (req, res, next) => {
   try {
     const userId = req.user?.id;
@@ -225,12 +216,17 @@ const createOrReuseRoleRequest = async (req, res, next) => {
       return res.status(200).json({ reused: true, data: populated });
     }
 
-    doc = await RoleRequest.create({
+    try{doc=await RoleRequest.create({
       user: userId,
       requestedRole,
       reason,
       status: "pending",
-    });
+    });}catch(e){if(e?.code===11000) {
+        const again = await RoleRequest.findOne({ user: userId, status: "pending" }).populate("user","email name role");
+        return res.status(200).json({ reused: true, data: again });
+     }
+     throw e;
+    }
 
     try {
       const user = await User.findById(userId).select("email name");
@@ -248,7 +244,6 @@ const createOrReuseRoleRequest = async (req, res, next) => {
   }
 };
 
-// 当前用户更新自己的资料
 const updateMe = async (req, res, next) => {
   try {
     const userId = req.user?.id;
@@ -260,10 +255,9 @@ const updateMe = async (req, res, next) => {
     if (name) update.name = String(name);
     if (email) update.email = String(email).trim().toLowerCase();
 
-    // 若要改密码则哈希（若模型已有 pre 钩子，请删掉此段）
+  
     if (password) {
-      const salt = await bcrypt.genSalt(10);
-      update.password = await bcrypt.hash(String(password), salt);
+        update.password=String(password);
     }
 
     if (typeof profileImage === "string") {
@@ -285,7 +279,6 @@ const updateMe = async (req, res, next) => {
   }
 };
 
-// 偏好点击追踪
 const MALE_LIKE = new Set([
   "mens-shirts",
   "mens-shoes",

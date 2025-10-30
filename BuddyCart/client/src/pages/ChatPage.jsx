@@ -8,7 +8,7 @@ import {useParams} from "react-router-dom";
 
 const SOCKET_URL=(typeof import.meta!=="undefined"&&import.meta.env &&import.meta.env.VITE_SOCKET_URL)||
 process.env.REACT_APP_SOCKET_URL||
-"http://localhost:5005";  
+"https://buddycart-server.onrender.com";  
 const NAMESPACE="/chat"; 
 const SOCKET_PATH="/socket.io";   
 
@@ -55,17 +55,17 @@ const ChatPage=({selectedProduct, shareTick})=>{
     }
     if(!roomId)return;
 
-      const socket=io(`${SOCKET_URL}${NAMESPACE}`,{
-        auth:{token,name: displayName},
-        query:{roomId},
-        transports:["websocket"],
+    const socket = io(`${SOCKET_URL}${NAMESPACE}`, {
+        auth: { token, name: displayName, avatar: user?.profileImage || null },
+        query: { roomId, token },
         reconnection: true,
-        reconnectionAttempts:5,
-        reconnectionDelay:1000,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
         withCredentials: true,
-        path: SOCKET_PATH,});
+        path: SOCKET_PATH,
+      });
 
-      socketRef.current=socket;
+           socketRef.current=socket;
 
       socket.on("connect",()=>{setConnected(true);socket.emit("join_room",{roomId})});
       socket.on("disconnect",()=>setConnected(false));
@@ -87,6 +87,12 @@ const ChatPage=({selectedProduct, shareTick})=>{
       socketRef.current = null;
       setConnected(false);
     };}, [roomId, token, isAuthenticated, logOut,displayName]);
+
+    useEffect(() => {
+      if (!token || !isAuthenticated || !roomId) return;
+
+      }, [roomId, token, isAuthenticated, logOut, displayName]);
+
    useEffect(()=>{
     if (!shareTick) return;                 
     if (!selectedProduct) return;
@@ -144,25 +150,34 @@ useEffect(() => {
   };
 
 
-   useEffect(() => {
+    const inviteOnceRef = useRef({});
+ useEffect(() => {
    if (!isAuthenticated) return;
-   const hasInvite=messages.some((m)=>m?.meta=== "roomInvite");
-   if (hasInvite) return;
-   const displayName = user?.name || user?.displayName || user?.username || "I";
-   const inviteText = `Hey,I'm${displayName}，Come hang out and chat with me! Copy the room code to join:${roomId}`;
+   const inviteId = `local_invite_${roomId}`;
+   if (inviteOnceRef.current[inviteId]) return;
+
+   const displayName =
+     user?.name || user?.displayName || user?.username || "I";
+   const inviteText =
+     `Hey, I'm ${displayName}, come hang out and chat with me! ` +
+     `Copy the room code to join: ${roomId}`;
 
    const inviteMsg = {
-     id: `local_invite_${roomId}`,
+     id: inviteId,
      type: "info",
      text: inviteText,
-     createdAt: Date.now(),
+     ts: Date.now(),
      meta: "roomInvite",
-     sender: { id: "system", name: "System" },
+     user: { userId: "system", name: "System", avatar: null },
    };
 
-   setMessages((prev) => (prev?.length ? [inviteMsg, ...prev] : [inviteMsg]));
-}, [isAuthenticated, roomId, user]);
-
+   setMessages((prev = []) => {
+     const cleaned = prev.filter((m) => m?.id !== inviteId && m?.meta !== "roomInvite"
+     );
+     return [inviteMsg, ...cleaned];
+   });
+   inviteOnceRef.current[inviteId] = true;
+ }, [isAuthenticated, roomId, user]);
   
    const currentUserId = useMemo(()=> user?.id || user?._id || null, [user]);
 

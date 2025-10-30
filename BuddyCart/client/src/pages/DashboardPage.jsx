@@ -65,6 +65,7 @@ const DashboardPage = () => {
       ) : (
         <p style={{ color: "#666" }}>Select a city to see temperature.</p>
       )}
+       <WeatherWidget onWeatherChange={setWeatherInfo} />
       <section style={{ margin: "20px 0" }}>
         <h2 style={{ marginBottom: 10 }}>Recommended for the weather</h2>
 
@@ -84,7 +85,7 @@ const DashboardPage = () => {
       <CloudinaryGallery />
 
       <ListItem />
-      <WeatherWidget onWeatherChange={setWeatherInfo} />
+     
     </div>
   );
 };

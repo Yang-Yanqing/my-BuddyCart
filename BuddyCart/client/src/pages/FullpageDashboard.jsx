@@ -28,25 +28,7 @@ const FullpageDashboard = ({
   return (
     <div className="fullpage-root">
       
-      <header className="app-header">
-        <Link
-          to="/"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollTo("hero");
-          }}
-          style={{ fontWeight: 800, letterSpacing: ".3px", color: "inherit" }}
-        >
-          BuddyCart Community
-        </Link>
-
-        <div style={{ marginLeft:"auto", display:"flex", gap: 10 }}>
-          <Link className="btn" to="/auth/login">Login</Link>
-          <Link className="btn btn-primary" to="/auth/register">Register</Link>
-        </div>
-      </header>
-
-     
+        
       <div ref={scrollerRef} className="snap-container">
         {/* Page1*/}
         <Section id="hero">

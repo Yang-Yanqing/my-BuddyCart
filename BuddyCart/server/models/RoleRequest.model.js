@@ -13,5 +13,10 @@ const roleRequestSchema=new mongoose.Schema({
 {timestamps:true}
 )
 
+roleRequestSchema.index(
+  {user:1,status:1},
+  {unique:true,partialFilterExpression:{status:"pending"}}
+);
+
 const RoleRequest=mongoose.model("RoleRequest",roleRequestSchema);
 module.exports={RoleRequest};

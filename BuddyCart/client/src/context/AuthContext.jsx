@@ -2,7 +2,7 @@ import React,{ createContext, useContext, useState, useEffect, Children } from "
 import axios from "axios";
 
 const AuthContext=createContext();
-// axios.defaults.baseURL = "http://localhost:5005/api"
+
 
 export const useAuth=()=>useContext(AuthContext);
 export const AuthProvider=({children})=>{
@@ -11,7 +11,7 @@ export const AuthProvider=({children})=>{
 
 const API_BASE=(typeof import.meta!=="undefined"&&import.meta.env&&import.meta.env.VITE_SERVER_URL)||
 process.env.REACT_APP_SERVER_URL||
-(process.env.NODE_ENV==="development" ? "http://localhost:5005" : "https://your-api.onrender.com");
+(process.env.NODE_ENV==="development" ? "http://localhost:5005" : "https://buddycart-server.onrender.com");
 useEffect(() => {axios.defaults.baseURL=API_BASE;},[]);
 
 

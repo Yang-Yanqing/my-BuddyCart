@@ -25,6 +25,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
   async function sendClick(item) {
     try {
       if (!item) return;
+      if (user?.role&&user.role!=="customer") return;
       const res = await axios.post("/api/auth/me/click", {
         title: item?.title,
         category: item?.category,

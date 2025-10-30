@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const { RoleRequest } = require("../models/RoleRequest.model");
 const { User } = require("../models/User.model");
-const { notifyApplicantResult } = require("../db/mailer"); // 如果你暂时没邮件功能，可以先注释掉相关调用
+const { notifyApplicantResult } = require("../db/mailer"); 
 
 
 function ensureAdmin(req, res) {
@@ -37,21 +37,34 @@ async function createRoleRequest(req, res, next) {
 
     const existing = await RoleRequest.findOne({
       user: userId,
-      requestedRole,
       status: "pending",
     }).populate("user", "email name role");
 
     if (existing) {
+      if (existing.requestedRole!==requestedRole) {
+        existing.requestedRole=requestedRole;
+        existing.reviewReason=reason||existing.reviewReason;
+        await existing.save();
+      }
       return res.status(200).json({ message: "already pending", data: existing });
     }
 
-    const doc = await RoleRequest.create({
+    let doc;
+    try{
+      doc = await RoleRequest.create({
       user: userId,
       requestedRole,
       status: "pending",
       reviewStatus: null,
       reviewReason: reason,
     });
+  }catch (e) {
+      if (e?.code === 11000) {
+        const again = await RoleRequest.findOne({ user: userId, status: "pending" }).populate("user","email name role");
+        return res.status(200).json({ message: "already pending", data: again });
+      }
+      throw e;
+    };
 
     const populated = await RoleRequest.findById(doc._id).populate("user", "email name role");
     return res.status(201).json({ message: "created", data: populated });

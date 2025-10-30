@@ -12,12 +12,15 @@ module.exports = (io) => {
         if (auth.startsWith("Bearer ")) token = auth.slice("Bearer ".length);
       }
       if (!token) return next(new Error("Unauthorized: no token"));
-      const userLoad = verifyAccessToken(token);
-      socket.data.user = {
-        userId: userLoad.id,
-        role: userLoad.role,
-        name: socket.handshake.auth?.name || userLoad.name || "User",
-      };
+      const userLoad=verifyAccessToken(token);
+       const authName = chatSocket.handshake.auth?.name;
+    const authAvatar = chatSocket.handshake.auth?.avatar;
+    chatSocket.data.user={
+      userId: userLoad.id,
+      role: userLoad.role,
+      name: (authName || userLoad.name || userLoad.email?.split?.("@")?.[0] || "User"),
+      avatar: authAvatar || userLoad.profileImage || null,
+    }
       next();
     } catch (err) {
       console.error("chat auth error:", err.message);

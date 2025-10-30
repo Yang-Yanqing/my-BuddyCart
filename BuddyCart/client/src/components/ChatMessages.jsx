@@ -38,8 +38,18 @@ const ChatMessages=({messages=[],currentUserId})=>{
               boxShadow:"0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
-            <div style={{fontSize: 12,color: "#667085",marginBottom: 4}}>
+           
+            <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#667085",marginBottom:4}}>
+              {m?.user?.avatar ? (
+                <img src={m.user.avatar} alt="" style={{width:18,height:18,borderRadius:"50%"}}/>
+              ) : (
+                <div style={{width:18,height:18,borderRadius:"50%",background:"#ddd",display:"grid",placeItems:"center",fontSize:10}}>
+                  {(m?.user?.name?.[0]||"U").toUpperCase()}
+                </div>
+              )}
               <strong>{m?.user?.name || "User"}</strong>
+
+
               {m?.type==="comment" ? (
                 <span style={{marginLeft: 8, fontSize: 11, opacity: 0.8}}>
                   [comment]

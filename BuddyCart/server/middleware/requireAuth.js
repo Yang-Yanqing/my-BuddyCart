@@ -1,4 +1,5 @@
 const {verifyAccessToken} = require("./jwt");
+const User=require("../models/User.model")
 
 function requireAuth(req,res,next) {
   const header = req.headers.authorization || "";
@@ -9,9 +10,12 @@ function requireAuth(req,res,next) {
 
   try {
     const decoded=verifyAccessToken(token);
-    req.user={ id: decoded.id,role: decoded.role };
+    User.findById(decoded.id).select("role").lean().then(dbUser=>{
+    if (!dbUser) return res.status(401).json({ message: "Unauthorized: user not found" });
+        req.user={ id: decoded.id,role: decoded.role };
     return next();
-  } catch (err) {
+  }) .catch(()=>res.status(401).json({message: "Unauthorized: user lookup failed" }));}  
+  catch (err) {
     return res.status(401).json({ message: "Unauthorized: invalid or expired token" });
   }
 };

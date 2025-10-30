@@ -62,7 +62,7 @@ export default function App() {
                 <Route path="/admin" element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>}/>
                 <Route path="/vendor" element={<ProtectedRoute roles={["vendor"]}><VendorDashboard /></ProtectedRoute>}/>
                  <Route path="/chat" element={<ChatAndShop/>}/>
-               <Route path="/my-shop" element={<ProtectedRoute role={["vendor"]}><MyShopPage/></ProtectedRoute>}/>
+               <Route path="/my-shop" element={<ProtectedRoute roles={["vendor"]}><MyShopPage/></ProtectedRoute>}/>
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

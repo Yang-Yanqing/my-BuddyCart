@@ -12,16 +12,24 @@ const CATEGORIES = [
 ];
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, logOut } = useAuth();
 
   const gotoTag = (tag) => {
     if (!tag) return;
     navigate(`/tags/${tag}`);
-    setOpen(false);
     setCatOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    if (user?.role === "admin") navigate("/admin");
+    else navigate("/profile");
+  };
+
+  const handleLogout = () => {
+    logOut?.();
+    navigate("/auth/login");
   };
 
   return (
@@ -46,7 +54,7 @@ export default function Navbar() {
           gap: 12,
         }}
       >
-   
+
         <div>
           <Link
             to="/"
@@ -72,15 +80,13 @@ export default function Navbar() {
             >
               YQ
             </span>
-            <span
-              style={{ fontWeight: 700, letterSpacing: 0.2, color: "#111" }}
-            >
+            <span style={{ fontWeight: 700, letterSpacing: 0.2, color: "#111" }}>
               BuddyCart
             </span>
           </Link>
         </div>
 
-
+ 
         <nav style={{ justifySelf: "center", position: "relative" }}>
           <div
             onMouseEnter={() => setCatOpen(true)}
@@ -147,7 +153,6 @@ export default function Navbar() {
           </div>
         </nav>
 
-    
         <div
           style={{
             justifySelf: "end",
@@ -167,6 +172,7 @@ export default function Navbar() {
           >
             Chat & Shop
           </NavLink>
+
           <NavLink
             to="/cart"
             style={{
@@ -179,40 +185,70 @@ export default function Navbar() {
             Cart
           </NavLink>
 
-          {token ? (
-            <div
-              onClick={() => navigate("/profile")}
-              title="Profile"
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: "50%",
-                display: "grid",
-                placeItems: "center",
-                background: "linear-gradient(180deg,#ffe8e0,#ffd6f2)",
-                color: "#222",
-                fontWeight: 700,
-                border: "1px solid rgba(0,0,0,0.08)",
-                cursor: "pointer",
-              }}
-            >
-              {user?.name?.[0]?.toUpperCase() || "U"}
-            </div>
+            {user ? (
+            <>
+              <div
+                onClick={handleProfileClick}
+                title="Profile"
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  display: "grid",
+                  placeItems: "center",
+                  background: "linear-gradient(180deg,#ffe8e0,#ffd6f2)",
+                  color: "#222",
+                  fontWeight: 700,
+                  border: "1px solid rgba(0,0,0,0.08)",
+                  cursor: "pointer",
+                }}
+              >
+                {user?.name?.[0]?.toUpperCase() || "U"}
+              </div>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(0,0,0,0.12)",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Logout
+              </button>
+            </>
           ) : (
-            <NavLink
-              to="/auth/login"
-              style={{
-                padding: "8px 14px",
-                borderRadius: 12,
-                background: "#111",
-                color: "#fff",
-                textDecoration: "none",
-                fontWeight: 600,
-                border: "1px solid rgba(0,0,0,0.9)",
-              }}
-            >
-              Sign in
-            </NavLink>
+            <>
+              <NavLink
+                to="/auth/login"
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 12,
+                  background: "#111",
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  border: "1px solid rgba(0,0,0,0.9)",
+                }}
+              >
+                Sign in
+              </NavLink>
+              <NavLink
+                to="/auth/register"
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 12,
+                  background: "#fff",
+                  color: "#111",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  border: "1px solid rgba(0,0,0,0.2)",
+                }}
+              >
+                Register
+              </NavLink>
+            </>
           )}
         </div>
       </div>
