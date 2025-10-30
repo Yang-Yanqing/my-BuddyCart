@@ -2,9 +2,10 @@
 // https://www.npmjs.com/package/dotenv
 require("dotenv").config();
 
+
 // ℹ️ Connects to the database
 require("./db");
-
+const cors = require('cors');
 // Handles http requests (express is node js framework)
 // https://www.npmjs.com/package/express
 const express = require("express");
@@ -13,9 +14,23 @@ const express = require("express");
 
 const app = express();
 
+ const allowedOrigins = [
+   'http://localhost:3000',
+   'https://buddycart-client.netlify.app'
+ ];
+
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
-
+app.use(
+   cors({origin: function (origin, cb) {
+       if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+       return cb(new Error('Not allowed by CORS'));
+     },
+     credentials: true,
+     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+     allowedHeaders: ['Content-Type', 'Authorization'],
+   })
+ );
 app.use("/api/admin", require("./routes/admin.routes"));
 app.use("/api/admin/role-requests",require("./routes/roleRequests.routes"));
 app.use("/api/products", require("./routes/product.routes"));
