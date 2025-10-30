@@ -1,6 +1,7 @@
 [build]
+  base = "BuddyCart/client"     
   command = "npm ci && npm run build"
-  publish = "dist"
+  publish = "build"             
 
 [[redirects]]
   from = "/*"
