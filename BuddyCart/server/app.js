@@ -1,6 +1,4 @@
 require("dotenv").config();
-
-
 require("./db");
 
 const express = require("express");
@@ -19,11 +17,10 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin(origin, cb) {
-   
+    
     if (!origin) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
-  
-    return cb(null, false);
+    return cb(null, false); 
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -34,7 +31,6 @@ const corsOptions = {
 
 
 app.use(cors(corsOptions));
-app.options("/(.*)", cors(corsOptions));
 
 
 require("./config")(app);
@@ -51,18 +47,11 @@ app.use("/api/vendor", require("./routes/vendor.routes"));
 const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
-
-app.get("/", (req, res) => {
-  res.send("BuddyCart API is running");
-});
-
-app.get("/healthz", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
+app.get("/", (req, res) => res.send("BuddyCart API is running"));
+app.get("/healthz", (req, res) => res.status(200).json({ status: "ok" }));
 
 const mongoose = require("mongoose");
 app.get("/dbz", (req, res) => {
-
   res.json({ readyState: mongoose.connection.readyState });
 });
 
@@ -84,7 +73,6 @@ app.get("/mongotest", (req, res) => {
     dbName: m ? (m[2] || "(none)") : null,
   });
 });
-
 
 require("./error-handling")(app);
 
