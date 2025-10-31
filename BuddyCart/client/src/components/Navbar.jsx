@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+
 
 const CATEGORIES = [
   { label: "Fashion", tag: "mens-shirts" },
@@ -11,10 +13,34 @@ const CATEGORIES = [
   { label: "More…", tag: null },
 ];
 
+const Avatar = ({ name, url, size = 32 }) => {
+  const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "U")}`;
+  const src = url || fallback;
+  return (
+    <img
+      src={src}
+      alt="avatar"
+      width={size}
+      height={size}
+      style={{
+        borderRadius: "50%",
+        objectFit: "cover",
+        display: "block",
+        border: "1px solid rgba(0,0,0,0.08)",
+      }}
+      onError={(e) => {
+        if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+      }}
+    />
+  );
+};
+
 export default function Navbar() {
   const [catOpen, setCatOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, logOut } = useAuth();
+  const {user, logOut} = useAuth();
+  const {cart}=useCart();
+  const {count}=cart.length;
 
   const gotoTag = (tag) => {
     if (!tag) return;
@@ -22,15 +48,18 @@ export default function Navbar() {
     setCatOpen(false);
   };
 
-  const handleProfileClick = () => {
-    if (user?.role === "admin") navigate("/admin");
-    else navigate("/profile");
-  };
-
+ 
   const handleLogout = () => {
     logOut?.();
     navigate("/auth/login");
   };
+
+    const onAvatarClick = () => {
+    if (!user) return navigate("/auth/login");
+     if (user.role === "admin") return navigate("/admin");
+     if (user.role === "vendor") return navigate("/vendor");
+     return navigate("/profile");
+   };
 
   return (
     <header
@@ -175,60 +204,30 @@ export default function Navbar() {
             Chat & Shop
           </NavLink>
 
-          <NavLink
-            to="/cart"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              textDecoration: "none",
-              color: "#333",
-            }}
-          >
-            Cart
-          </NavLink>
+          <NavLink to="/cart" style={{ position: "relative", display: "inline-block" }}>
+         Cart
+         {count > 0 && (
+           <span style={{
+             position: "absolute", top: -6, right: -10, minWidth: 16, height: 16,
+             borderRadius: 8, padding: "0 4px", fontSize: 11, lineHeight: "16px",
+             background: "#ff4d4f", color: "#fff", textAlign: "center"
+           }}>{count}</span>
+         )}
+       </NavLink>
 
-          <NavLink to="/about" className="nav-link">
-          About
-         </NavLink>
+          <NavLink to="/about" style={{ padding: "8px 12px", borderRadius: 10, color: "#333", textDecoration: "none" }}>
+            About
+          </NavLink>
 
           {user ? (
             <>
-              {user.profileImage ? (
-                <img
-                  src={user.profileImage}
-                  alt="me"
-                  onClick={handleProfileClick}
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                    border: "1px solid rgba(0,0,0,0.08)",
-                  }}
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-              ) : (
-                <div
-                  onClick={handleProfileClick}
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    background: "#e5e7eb",
-                    color: "#111",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                  }}
-                >
-                  {(user?.name || user?.email || "U")[0].toUpperCase()}
-                </div>
-              )}
+              <div
+                onClick={onAvatarClick}
+                style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+                title="Open profile"
+              >
+                <Avatar name={user.name || user.email} url={user.profileImage} size={36} />
+              </div>
               <button
                 onClick={handleLogout}
                 style={{
@@ -278,4 +277,4 @@ export default function Navbar() {
       </div>
     </header>
   );
-};
+}

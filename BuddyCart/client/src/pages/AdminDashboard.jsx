@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import http from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { normalizeImage } from "../utils/normalizeImage";
 
@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   async function fetchRequests() {
     setLoading(true);
     try {
-      const res = await axios.get("/api/admin/role-requests", {
+      const res = await http.get("/admin/role-requests", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data.items || []);
@@ -28,7 +28,7 @@ export default function AdminDashboard() {
 
   async function handleApprove(id) {
     try {
-      await axios.post(`/api/admin/role-requests/${id}/approve`, {}, {
+      await http.post(`/admin/role-requests/${id}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("✅ Request approved!");
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
   async function handleReject(id) {
     try {
-      await axios.post(`/api/admin/role-requests/${id}/reject`, {}, {
+      await http.post(`/admin/role-requests/${id}/reject`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("❌ Request rejected.");
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
   async function handleSyncProducts() {
     try {
-      const res = await axios.post("/api/admin/products/sync", {}, {
+      const res = await http.post("/admin/products/sync", {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProductInfo(res.data);
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
     if (!confirmDelete) return;
 
     try {
-      const res = await axios.delete("/api/admin/products", {
+      const res = await http.delete("/admin/products", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProductInfo(res.data);

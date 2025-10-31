@@ -1,10 +1,11 @@
+import http from "../config/api";
 import React, { useState } from "react";
-import axios from "axios";
+
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { user, token } = useAuth();
+  const {user,updateMe} = useAuth();
   const navigate = useNavigate();
 
   const [showEdit, setShowEdit] = useState(false);
@@ -41,41 +42,25 @@ const ProfilePage = () => {
   };
 
   const handleSave = async () => {
-  try {
-    setLoading(true);
-    const res = await axios.put(
-      "/api/auth/me",
-      { name: form.name, email: form.email },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    alert("✅ Profile updated successfully!");
-  
-   if (res?.data?.user) {
-     const stored = JSON.parse(localStorage.getItem("user") || "{}");
-     localStorage.setItem("user", JSON.stringify({ ...stored, ...res.data.user }));
-   }
-   window.location.reload();
-    setShowEdit(false);
-  } catch (err) {
-    console.error(err);
-    alert("❌ Failed to update profile");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      await updateMe({
+        name: form.name,
+        email: form.email,
+        profileImage: form.profileImage
+      });
+      setShowEdit(false);
+    } finally { setLoading(false); }
+  };
 
   const handleAdminAction = async (type) => {
     if (!window.confirm(`Are you sure you want to ${type}?`)) return;
     try {
       if (type === "clear") {
-        await axios.delete("/api/admin/products", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await http.delete("/admin/products");
         alert("🧹 All products cleared!");
       } else if (type === "sync") {
-        await axios.post("/api/admin/products/sync", {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await http.post("/admin/products/sync", {});
         alert("🔄 Products synced from external source!");
       }
     } catch (err) {
@@ -106,23 +91,8 @@ const ProfilePage = () => {
           textAlign: "center",
         }}
       >
-        <div
-          style={{
-            width: 96,
-            height: 96,
-            margin: "0 auto 16px",
-            borderRadius: "50%",
-            background:
-              "linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%)",
-            color: "#fff",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            fontSize: 36,
-            fontWeight: 600,
-          }}
-        >
-          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, justifyContent:"center" }}>
+        <div>
         {user?.profileImage ? (
           <img
             src={user.profileImage}

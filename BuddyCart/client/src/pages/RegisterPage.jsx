@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import http from "../config/api";
+import { useNavigate } from "react-router-dom";
 
 const authForm={
     name:"",
@@ -11,6 +12,7 @@ const authForm={
 
 
 const RegisterPage=()=>{
+const navigate = useNavigate();
 const [auth,setAuth]=useState(authForm);
 const onChange=(e)=>{
     setAuth({...auth,[e.target.name]:e.target.value})
@@ -20,11 +22,12 @@ const toBackend=async (e)=>{
     e.preventDefault();
     try {
         const {name,email,password,role,profileImage}=auth;
-        const payload = { name,email,password,profileImage };
+        const payload={ name,email,password,profileImage };
         if (role==="vendor"||role==="admin")payload.desiredRole=role;
-        const res=await axios.post(`${API_BASE}/api/auth/register`,payload);
+        const res=await http.post("/auth/register", payload);
         console.log("Registered:", res.data);
         alert("Registration successful!");
+        navigate("/auth/login",{ replace: true });
     } catch (error) {
         console.error(error);
         alert("Registration failed!");

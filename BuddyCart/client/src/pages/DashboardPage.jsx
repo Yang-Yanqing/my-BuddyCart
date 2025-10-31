@@ -34,7 +34,7 @@ function pickByWeather(items, weather) {
   return list;
 }
 
-const DashboardPage = () => {
+const DashboardPage = ({ selectMode = false, selectedId = null, onSelect } = {}) => {
   const [weatherInfo, setWeatherInfo] = useState({
     temp: null,
     feelsLike: null,
@@ -84,7 +84,7 @@ const DashboardPage = () => {
 
       <CloudinaryGallery />
 
-      <ListItem />
+      <ListItem selectMode={selectMode} selectedId={selectedId} onSelect={onSelect} />
      
     </div>
   );

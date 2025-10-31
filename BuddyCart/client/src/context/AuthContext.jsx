@@ -1,55 +1,44 @@
-import React,{ createContext, useContext, useState, useEffect, Children } from "react";
-import axios from "axios";
-import {API_BASE} from "../config/api"
+import React, { createContext, useContext, useEffect, useState } from "react";
+import http from "../config/api";
 
-const AuthContext=createContext();
+const AuthContext = createContext();
+export const useAuth = () => useContext(AuthContext);
 
-
-export const useAuth=()=>useContext(AuthContext);
-export const AuthProvider=({children})=>{
-    const[user,setUser]=useState(null);
-    const[token,setToken]=useState(localStorage.getItem("token") || null)
-
-useEffect(() => {axios.defaults.baseURL=API_BASE.replace(/\/+$/, "");},[]);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
 
 
-useEffect(()=>{
-    if(token){
-        axios.defaults.headers.common["Authorization"]=`Bearer ${token}`   
-    }else{
-        delete axios.defaults.headers.common["Authorization"];
-    }       
-},[token]);
-
-const loginUser=(token,user)=>{
-    setToken(token);
-    setUser(user);
-    localStorage.setItem("token", token);
-}
-
-const logOut=()=>{
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem("token");
-}
-
-useEffect(() => {
-    const id = axios.interceptors.response.use(
-      (r) => r,
-      (err) => {
-        if (err?.response?.status === 401) logOut();
-        return Promise.reject(err);
+  useEffect(() => {
+    const id = http.interceptors.request.use((config) => {
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    );
-    return () => axios.interceptors.response.eject(id);
-  }, []);
+      return config;
+    });
+    return () => http.interceptors.request.eject(id);
+  }, [token]);
 
-const value = {
-    user,
-    token,
-    loginUser,
-    logOut,
-    isAuthenticated: !!token,
+  const loginUser = (jwt, profile) => {
+    setToken(jwt);
+    setUser(profile);
+    localStorage.setItem("token", jwt);
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;}
+  const logOut = () => {
+    setToken("");
+    setUser(null);
+    localStorage.removeItem("token");
+  };
+
+
+  const updateMe = async (patch) => {
+    const res = await http.put("/auth/me", patch);
+    if (res?.data?.user) setUser(res.data.user);
+    return res.data;
+  };
+
+  const value = { user, setUser, token, setToken, loginUser, logOut, updateMe, isAuthenticated: !!token };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

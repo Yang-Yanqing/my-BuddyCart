@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import http from "../config/api";
 import { useNavigate, useParams } from "react-router-dom";
 import { useItems } from "../context/ItemsContext";
+import productId from "../utils/productId";
 
 export default function ItemEditPage() {
   const { itemId } = useParams();
@@ -16,7 +17,7 @@ export default function ItemEditPage() {
     let ignore = false;
     (async () => {
       try {
-        const { data } = await axios.get(`/api/products/${itemId}`);
+        const {data}=await http.get(`/products/${itemId}`);
         if (!ignore) {
           setForm({
             title: data.title ?? "",
@@ -54,10 +55,10 @@ export default function ItemEditPage() {
         ...form,
         price: Number(form.price) || 0
       };
-      const { data } = await axios.put(`/api/products/${itemId}`, payload);
+      const {data}=await http.put(`/products/${itemId}`, payload);
 
           setItems((prev) =>
-        prev.map((p) => (p.id === Number(itemId) ? { ...p, ...data } : p))
+       prev.map((p)=>(productId(p)===String(itemId)?{ ...p, ...data }:p))
       );
 
       navigate(`/items/${itemId}`); 

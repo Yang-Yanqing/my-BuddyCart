@@ -15,7 +15,7 @@ export default function MyShopPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`${BASE}/api/shops/me`, { headers })
+    fetch(`${BASE}/shops/me`, { headers })
       .then((r) => (r.ok ? r.json() : null))
       .then((s) => {
         if (s) {
@@ -32,7 +32,7 @@ export default function MyShopPage() {
 
   const save = async () => {
     const method = shop ? "PATCH" : "POST";
-    const res = await fetch(`${BASE}/api/shops/me`, {
+    const res = await fetch(`${BASE}/shops/me`, {
       method,
       headers,
       body: JSON.stringify(form),

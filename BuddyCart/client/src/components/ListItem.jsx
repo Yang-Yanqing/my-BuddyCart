@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import http from "../config/api";
 import { useItems } from "../context/ItemsContext";
 import { useAuth } from "../context/AuthContext";
 import productId from "../utils/productId";
@@ -26,7 +26,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
     try {
       if (!item) return;
       if (user?.role&&user.role!=="customer") return;
-      const res = await axios.post("/api/auth/me/click", {
+      const res = await http.post("/auth/me/click", {
         title: item?.title,
         category: item?.category,
       });
@@ -40,7 +40,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get("/api/products", {
+        const { data } = await http.get("/products", {
           params: { page, limit, _: Date.now() },
           headers: { "Cache-Control": "no-cache" },
         });
@@ -73,7 +73,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      await axios.delete(`/api/admin/products/${id}`);
+      await http.delete(`/admin/products/${id}`);
       setItems((prev) => prev.filter((p) => productId(p) !== String(id)));
       setTotal((t) => Math.max(t - 1, 0));
     } catch (err) {
@@ -100,21 +100,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
             alignItems: "center",
           }}
         >
-          <button
-            onClick={toggleRole}
-            style={{
-              padding: "8px 14px",
-              borderRadius: 8,
-              border: "none",
-              cursor: "pointer",
-              background: role === "admin" ? "#2563eb" : "#9ca3af",
-              color: "white",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-          >
-            Current Role: {role === "admin" ? "Admin" : "Customer"} (click to switch)
-          </button>
+         
 
           {user?.role === "admin" && (
             <Link
@@ -272,7 +258,7 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
                         Share to Chat
                     </button>
 
-                  {!selectMode && role === "admin" && (
+                  {!selectMode && user?.role === "admin" && (
                     <>
                       <Link
                         to={`/items/${uid}/edit`}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import http from "../config/api";
 import { useNavigate } from "react-router-dom";
 import { useItems } from "../context/ItemsContext";
 
@@ -27,7 +27,7 @@ export default function ItemCreatePage() {
     e.preventDefault();
     try {
       setSaving(true);
-      const { data } = await axios.post("/api/products", form);
+      const { data } = await http.post("/products", form);
 
       
       setItems((prev) => [data, ...prev]);

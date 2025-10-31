@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useItems } from "../context/ItemsContext";
 import { useCart } from "../context/CartContext";
 import productId from "../utils/productId";
-import axios from "axios";
+import http from "../config/api";
 
 const ItemsDetailsPage = () => {
   const { itemId } = useParams();
@@ -23,7 +23,7 @@ const ItemsDetailsPage = () => {
     let canceled = false;
     (async () => {
       try {
-        const { data } = await axios.get(`/api/products/${itemId}`);
+        const { data } = await http.get(`/products/${itemId}`);
         if (!canceled) setFetched(data);
       } catch (_) {
            }

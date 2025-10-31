@@ -53,8 +53,8 @@ function Sidebar({ isOpen }) {
                   +
                 </button>
               </div>
-              <div>€{c.product.price.toFixed(2)} each</div>
-              <div>Subtotal: €{(c.product.price * c.quantity).toFixed(2)}</div>
+              <div>€{Number(c.product.price||0).toFixed(2)} each</div>
+              <div>Subtotal: €{(Number(c.product.price || 0) * c.quantity).toFixed(2)}</div>
               <button
                 className={styles.removeBtn}
                 onClick={() => removeItem(productId(c.product))}

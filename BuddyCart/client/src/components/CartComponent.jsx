@@ -11,7 +11,7 @@ function toNumber(v, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export default function Cart() {
+export default function CartComponent() {
   const { cart, increaseQuantity, decreaseQuantity, removeItem, clearCart } =
     useCart();
 

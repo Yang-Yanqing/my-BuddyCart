@@ -18,7 +18,7 @@ export default function PaypalReturn() {
 
     (async () => {
       try {
-        const r = await fetch(`${API_BASE.replace(/\/+$/, "")}/api/checkout/capture-order`, {
+        const r = await fetch(`${API_BASE.replace(/\/+$/, "")}/checkout/capture-order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderID }),

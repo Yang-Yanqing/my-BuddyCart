@@ -5,10 +5,10 @@ import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import ItemsDetailsPage from "./pages/ItemsDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import TagPage from "./pages/TagsPage";
+import TagPage from "./pages/TagPage";
 import CartComponent from "./components/CartComponent";
-import CreateItemPage from "./pages/CreateItemPage";
-import UpdateItemPage from "./pages/UpdateItemPage";
+import ItemCreatePage from "./pages/ItemCreatePage";
+import ItemEditPage from "./pages/ItemEditPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import ChatAndShop from "./pages/ChatAndShop";
@@ -17,6 +17,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import VendorDashboard from "./pages/VendorDashboard";
 import Profile from "./pages/ProfilePage";
 import MyShopPage from "./pages/MyShopPage";
+import AdminRoleRequests from "./pages/AdminRoleRequests";
+
 import "./styles/App.css";
 import { ItemsProvider } from "./context/ItemsContext";
 import { CartProvider } from "./context/CartContext";
@@ -51,16 +53,17 @@ export default function App() {
             <Routes>
               <Route element={<PageWrapper isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>}>
                 <Route index element={<FullpageDashboard/>}/>
-                <Route path="/items/new" element={<ProtectedRoute roles={["admin","vendor"]}><CreateItemPage /></ProtectedRoute>} />
-                <Route path="/items/:itemId/edit" element={<ProtectedRoute roles={["admin","vendor"]}><UpdateItemPage /></ProtectedRoute>} />
+                <Route path="/items/new" element={<ProtectedRoute roles={["admin","vendor"]}><ItemCreatePage /></ProtectedRoute>} />
+                <Route path="/items/:itemId/edit" element={<ProtectedRoute roles={["admin","vendor"]}><ItemEditPage /></ProtectedRoute>} />
                 <Route path="/items/:itemId" element={<ItemsDetailsPage />} />
-                <Route path="/cart" element={<CartComponent />} />
+                <Route path="/cartcomponent" element={<CartComponent />} />
                 <Route path="/tags/:tag" element={<TagPage />} />
                 <Route path="/auth/register" element={<RegisterPage />} />
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/chatandshop/:roomId?"element={<ChatAndShop />}/>
                 <Route path="/profile"element={<ProtectedRoute roles={["admin","vendor","customer"]}><Profile /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>}/>
+                <Route path="/admin/role-requests" element={<ProtectedRoute roles={["admin"]}><AdminRoleRequests/></ProtectedRoute>}/>
                 <Route path="/vendor" element={<ProtectedRoute roles={["vendor"]}><VendorDashboard /></ProtectedRoute>}/>
                  <Route path="/chat" element={<ChatAndShop/>}/>
                <Route path="/my-shop" element={<ProtectedRoute roles={["vendor"]}><MyShopPage/></ProtectedRoute>}/>

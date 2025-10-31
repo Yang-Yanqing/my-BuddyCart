@@ -1,258 +1,211 @@
-import {useEffect,useRef,useState,useMemo} from "react";
-import{io} from "socket.io-client"
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { createChatSocket } from "../utils/createChatSocket";
+
+
 import ChatInput from "../components/ChatInput";
 import ChatMessages from "../components/ChatMessages";
 import ShowcasePanel from "../components/ShowcasePanel";
-import {useAuth} from "../context/AuthContext";
-import {useParams} from "react-router-dom";
-import {SOCKET_URL, SOCKET_PATH} from "../config/api";
+
+const ChatPage = ({ selectedProduct = null, shareTick = 0 }) => {
+  const { roomId: roomParam } = useParams();
+  const roomId = roomParam || "lobby";
+
+  const { user, token, isAuthenticated, logOut } = useAuth();
+
+  const [connected, setConnected] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [myItem, setMyItem] = useState(null);
+  const [peerItem, setPeerItem] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const socketRef = useRef(null);
 
 
- const NAMESPACE = "/chat";   
+  const socket = useMemo(() => {
+    if (!isAuthenticated) return null;
+    return createChatSocket({
+      baseURL: process.env.REACT_APP_SOCKET_URL || window.location.origin,
+      token,
+      user,
+      roomId,
+    });
+  }, [isAuthenticated, token, user, roomId]);
 
-const ChatPage=({selectedProduct, shareTick})=>{
-    const {token,user,isAuthenticated,logOut}=useAuth();
-    const {roomId:roomParam}=useParams();
 
-    const roomId=roomParam||"lobby"
-    
-    const displayName = useMemo(
-     () => (user?.name || user?.displayName || user?.username || (user?.email ? user.email.split("@")[0] : null) || "Guest"),
-      [user]
-    );
-
-    const[copied,setCopied]=useState(false);
-    
-    const copyRoomCode=async() => {
-    try {
-     await navigator.clipboard.writeText(roomId);
-      setCopied(true);
-      setTimeout(()=>setCopied(false),1500);
-   } catch (e) {
-     const ok=window.prompt("You can copy the roomId", roomId);
-     if (ok!==null) setCopied(true);
-   }
-  };
-
-    const [myItem,setMyItem]=useState(null);
-    const [peerItem,setPeerItem]=useState(null);
-
-    
-    const [messages,setMessages]=useState([]);
-    const [connected,setConnected]=useState(false);
-    const socketRef=useRef(null);
-
-    useEffect(()=>
-    {
-      if (!isAuthenticated) {
-        setConnected(false);
-        setMessages([]);
-        setMyItem(null);
-        setPeerItem(null);
+  useEffect(() => {
+    if (!socket) {
+      setConnected(false);
+      setMessages([]);
+      setMyItem(null);
+      setPeerItem(null);
       return;
     }
-    if(!roomId)return;
 
-    const socket = io(`${SOCKET_URL}${NAMESPACE}`, {
-        transports: ["websocket"],
-        auth: { token, name: displayName, avatar: user?.profileImage || null },
-        query: { roomId, token },
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        withCredentials: true,
-        path: SOCKET_PATH,
-      });
+    socketRef.current = socket;
 
-           socketRef.current=socket;
+    const onConnect = () => {
+      setConnected(true);
+      socket.emit("join_room", { roomId });
+    };
+    const onDisconnect = () => setConnected(false);
+    const onConnectError = (err) => {
+      console.error("connect_error", err?.message || err);
+      if (String(err?.message || "").includes("401")) logOut?.();
+    };
+    const onRoomState = (s) => {
+      if (s?.recentMessages) setMessages(s.recentMessages);
+      if (s?.showcase) {
+        setMyItem(s.showcase.mine || null);
+        setPeerItem(s.showcase.peer || null);
+      }
+    };
+    const onMessage = (m) =>
+      setMessages((prev) => [...prev, m].slice(-300));
+    const onChatError = (e) => console.error("chat:error", e);
 
-      socket.on("connect",()=>{setConnected(true);socket.emit("join_room",{roomId})});
-      socket.on("disconnect",()=>setConnected(false));
-      
-      socket.on("connect_error",(err)=>{console.error("connect_error", err?.message || err);
-      if (String(err?.message||"").includes("401")) {logOut?.();}});
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("room_state", onRoomState);
+    socket.on("message", onMessage);
+    socket.on("chat:error", onChatError);
 
-      socket.on("room_state",(s)=>s.recentMessages&&setMessages(s.recentMessages));
-
-      socket.on("message",(m)=>setMessages((prev)=>[...prev,m].slice(-300)));
-
-      socket.on("chat:error",(err)=>{console.error("chat:error",err)});
-
-      return () => {
-        try {
-        socket.emit("leave_room", {roomId});
+    return () => {
+      try {
+        socket.emit("leave_room", { roomId });
       } catch {}
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("room_state", onRoomState);
+      socket.off("message", onMessage);
+      socket.off("chat:error", onChatError);
       socket.disconnect();
       socketRef.current = null;
       setConnected(false);
-    };}, [roomId, token, isAuthenticated, logOut,displayName]);
+    };
+  }, [socket, roomId, logOut]);
 
-  
 
-   useEffect(()=>{
-    if (!shareTick) return;                 
-    if (!selectedProduct) return;
-    if (!connected) return;
-    const socket = socketRef.current;
-    if (!socket) return;
-    
-    socket.emit("showcase:set", { item: selectedProduct });
+  useEffect(() => {
+    if (!selectedProduct || !connected || !socketRef.current) return;
+    socketRef.current.emit("showcase:set", { item: selectedProduct });
+  }, [selectedProduct, shareTick, connected]);
 
-    
-  }, [shareTick, selectedProduct, connected]);
- 
-useEffect(() => {
-  const handler = (e) => {
-    const item = e.detail;
-    if (item && socketRef.current) {
-      socketRef.current.emit("showcase:set", { item });
-    } else {
-      alert("Chat not connected yet — open chat first!");
+  useEffect(() => {
+    const handler = (e) => {
+      const item = e.detail;
+      if (item && socketRef.current) {
+        socketRef.current.emit("showcase:set", { item });
+      } else {
+        alert("Chat not connected yet — open chat first!");
+      }
+    };
+    window.addEventListener("share-to-showcase", handler);
+    return () => window.removeEventListener("share-to-showcase", handler);
+  }, []);
+
+
+  const onSend = (text) => {
+    const t = (text || "").trim();
+    if (!t || !connected || !socketRef.current) return;
+    socketRef.current.emit("send_message", {
+      roomId,
+      type: "chat",
+      text: t,
+      tempId: `tmp_${Date.now()}`,
+    });
+  };
+
+  const shareToShowcase = (item) =>
+    socketRef.current?.emit("showcase:set", { item });
+  const clearMine = () =>
+    socketRef.current?.emit("showcase:clear", { owner: "mine" });
+  const clearPeer = () =>
+    socketRef.current?.emit("showcase:clear", { owner: "peer" });
+  const rate = (target, ratingKey) =>
+    socketRef.current?.emit("showcase:rate", { target, rating: ratingKey });
+
+  const currentUserId = user?.id || user?._id || null;
+
+
+  const copyRoomCode = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      window.prompt("Copy room code:", roomId);
     }
   };
-  window.addEventListener("share-to-showcase", handler);
-  return () => window.removeEventListener("share-to-showcase", handler);
-}, []);
 
-    useEffect(()=>{
-        const socket=socketRef.current;
-        if (!socket) return;
-
-    const onShowcase=(s)=>{
-      setMyItem(s?.mine || null);
-      setPeerItem(s?.peer || null);
-    };
-
-    socket.on("showcase_state", onShowcase);
-    return () => {socket.off("showcase_state", onShowcase);};
-  }, [connected]);
-
-  
-  const onSend=(text)=>{if (!text?.trim()) return;
-    if (!connected||!socketRef.current) return;
-    const tempId=`tmp_${Date.now()}`;
-    socketRef.current.emit("send_message",{roomId,type:"chat",text,tempId});
-  };
-
-  const shareToShowcase=(item)=>{
-     if(!item) return;
-    socketRef.current?.emit("showcase:set", { item });
-  };
-  const clearMine=()=>socketRef.current?.emit("showcase:clear", { owner: "mine" });
-  const clearPeer=()=>socketRef.current?.emit("showcase:clear", { owner: "peer" });
-  const rate=(target, ratingKey)=>{
-    if(!target||!ratingKey) return;
-    socketRef.current?.emit("showcase:rate",{target,rating:ratingKey});
-  };
-
-
-    const inviteOnceRef = useRef({});
- useEffect(() => {
-   if (!isAuthenticated) return;
-   const inviteId = `local_invite_${roomId}`;
-   if (inviteOnceRef.current[inviteId]) return;
-
-   const displayName =
-     user?.name || user?.displayName || user?.username || "I";
-   const inviteText =
-     `Hey, I'm ${displayName}, come hang out and chat with me! ` +
-     `Copy the room code to join: ${roomId}`;
-
-   const inviteMsg = {
-     id: inviteId,
-     type: "info",
-     text: inviteText,
-     ts: Date.now(),
-     meta: "roomInvite",
-     user: { userId: "system", name: "System", avatar: null },
-   };
-
-   setMessages((prev = []) => {
-     const cleaned = prev.filter((m) => m?.id !== inviteId && m?.meta !== "roomInvite"
-     );
-     return [inviteMsg, ...cleaned];
-   });
-   inviteOnceRef.current[inviteId] = true;
- }, [isAuthenticated, roomId, user]);
-  
-   const currentUserId = useMemo(()=> user?.id || user?._id || null, [user]);
-
-
-
-return(
-    <main>
-       <div className="card" style={{marginBottom:12,padding:"10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ lineHeight:1.3 }}>
-         <div style={{ fontSize:14, opacity:0.8}}>Current room</div>
-        <div style={{ fontWeight:600 }}>{roomId}</div>
-     </div>
-     <button className="btn" style={{ marginLeft: "auto" }} onClick={copyRoomCode}>
-        {copied ? "Copied":"Copy roomId"}
-       </button>
+  return (
+    <main style={{ maxWidth: 1100, margin: "0 auto", padding: "12px 16px" }}>
+      <div
+        className="card"
+        style={{
+          marginBottom: 12,
+          padding: "10px 12px",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          border: "1px solid rgba(0,0,0,0.08)",
+          borderRadius: 10,
+          background: "#fff",
+        }}
+      >
+        <div style={{ lineHeight: 1.3 }}>
+          <div style={{ fontSize: 12, opacity: 0.7 }}>Current room</div>
+          <div style={{ fontWeight: 600 }}>{roomId}</div>
+        </div>
+        <span
+          style={{
+            marginLeft: 12,
+            fontSize: 12,
+            padding: "2px 8px",
+            borderRadius: 999,
+            background: connected ? "#e8fff2" : "#fff1f0",
+            color: connected ? "#137a32" : "#a61d24",
+            border: "1px solid rgba(0,0,0,0.06)",
+          }}
+        >
+          {connected ? "connected" : "disconnected"}
+        </span>
+        <button className="btn" style={{ marginLeft: "auto" }} onClick={copyRoomCode}>
+          {copied ? "Copied" : "Copy roomId"}
+        </button>
       </div>
 
-        <div className="chatInput">
-            <ChatMessages messages={messages} currentUserId={currentUserId}/>
-            <br/>
-             <ChatInput onSend={onSend} disabled={!connected||!isAuthenticated}maxLen={500}/>
-            {!connected && isAuthenticated && (
-          <p style={{opacity:0.7}}>Connecting to the chat service…</p>
+      {!isAuthenticated ? (
+        <p style={{ opacity: 0.8 }}>Please log in before starting to chat.</p>
+      ) : null}
+
+      <div className="chatArea">
+        <ChatMessages messages={messages} currentUserId={currentUserId} />
+        <div style={{ height: 8 }} />
+        <ChatInput onSend={onSend} disabled={!connected || !isAuthenticated} maxLen={500} />
+
+        {!connected && isAuthenticated && (
+          <p style={{ opacity: 0.7, marginTop: 6 }}>Connecting to the chat service…</p>
         )}
-        {!isAuthenticated && (
-          <p style={{opacity:0.7}}>Please log in before starting to chat.</p>
-        )}
-           
-           <ShowcasePanel meName="me"
-                          peerName="peer"
-                          myItem={myItem}
-                          peerItem={peerItem}
-                          onClearMine={clearMine}
-                          onClearPeer={clearPeer}
-                          onRate={rate}/>
-        
-<div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap", alignItems: "center" }}>
-  {["😍", "😊", "😮", "😡", "💩"].map((emo) => (
-    <button
-      key={emo}
-      onClick={() => onSend(emo)} 
-      style={{
-        fontSize: 22,
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-      }}
-      title={`Send ${emo}`}
-    >
-      {emo}
-    </button>
-  ))}
 
+        <div style={{ height: 10 }} />
 
-  <button
-    onClick={() => {
-      if (!connected) {
-        alert("Chat not connected yet — open chat first!");
-        return;
-      }
-      if (!myItem) {
-        alert("Please share a product first before scoring it.");
-        return;
-      }
-  
-      onSend("⭐ I scored my shared item!");
-    
-      socketRef.current?.emit("showcase:rate", { target: myItem, rating: "⭐" });
-    }}
-    className="btn"
-    style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 6 }}
-  >
-    Score me item
-  </button>
-</div>
-
-        </div>
+        <ShowcasePanel
+          meName="me"
+          peerName="peer"
+          myItem={myItem}
+          peerItem={peerItem}
+          onClearMine={clearMine}
+          onClearPeer={clearPeer}
+          onRate={rate}
+          onShare={shareToShowcase}
+        />
+      </div>
     </main>
-)
-}
+  );
+};
 
 export default ChatPage;

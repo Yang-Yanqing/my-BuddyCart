@@ -10,7 +10,7 @@ export default function TagPage() {
 
     async function loadProducts() {
       const res = await fetch(
-  `${API_BASE.replace(/\/+$/, "")}/api/products?category=${encodeURIComponent(tag)}&limit=60`,
+  `$${API_BASE.replace(/\/+$/, "")}/products?category=${encodeURIComponent(tag)}&limit=60`,
   { headers: { "Cache-Control": "no-cache" }});
       const data = await res.json();
       setProducts(data.products || []);

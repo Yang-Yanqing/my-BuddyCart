@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import http from "../config/api";
 import {useAuth} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
 import {API_BASE} from "../config/api";
@@ -21,22 +21,39 @@ const LoginPage=()=>{
     setLogin({...login,[e.target.name]:e.target.value})
 }
 
-const toBackend=async(e)=>{
-     e.preventDefault();
-    try {
-    const res=await axios.post(`${API_BASE}/api/auth/login`, login);
-    const {token,user} = res.data;
-    loginUser(token, user);
-    if (user.role === "admin") {navigate("/admin");alert("Admin logIn successful!");}
-    else if (user.role === "vendor") {navigate("/vendor");alert("Vendor logIn successful!")}
-    else {navigate("/");alert("Custom logIn successful!")}      
-    } catch (error) {
-        console.error(error);
-        alert("LogIn failed!");
-  }
-     
-}
+const toBackend = async (e) => {
+  e.preventDefault();
 
+  const payload = {
+    email: (login.email || "").trim(),
+    password: (login.password || "").trim(),
+  };
+
+  if (!payload.email || !payload.password) {
+    alert("Email/Password required");
+    return;
+  }
+
+  try {
+    const res = await http.post("/auth/login", payload);
+    const { token, user } = res.data;
+    loginUser(token, user);
+    if (user.role==="admin"){ alert("Admin logIn successful!");  navigate("/"); }
+    else if (user.role==="vendor"){ alert("Vendor logIn successful!"); navigate("/"); }
+    else{ alert("Custom logIn successful!"); navigate("/"); }
+  } catch (err) {
+    console.error(
+      "LOGIN ERROR ->",
+      err?.response?.status,
+      err?.response?.data || err?.message
+    );
+    alert(
+      err?.response?.data?.message ||
+      err?.response?.data?.error ||
+      "LogIn failed!"
+    );
+  }
+};
     return(
         <main className="loginContainer">
         <h1>Login Page</h1>

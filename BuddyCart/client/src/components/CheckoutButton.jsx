@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import http from "../config/api"
 import {API_BASE} from "../config/api";
 
 
@@ -16,12 +16,12 @@ export default function CheckoutButton({products=[],className}) {
       setLoading(true);
 
       
-      const { data } = await axios.post(
-        `${API_BASE}/api/checkout/create-checkout-session`,
-        { products },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
+     const { data } = await http.post(
+  "/checkout/create-checkout-session",
+   { products },
+   { headers: { "Content-Type": "application/json" } }
+ );
+ 
       if (!data?.url) throw new Error("No checkout URL returned from server");
 
    
