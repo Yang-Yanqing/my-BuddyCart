@@ -152,6 +152,14 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
                       ? "2px solid #2563eb"
                       : "2px solid transparent",
                 }}
+                   onClick={(e) => {
+                  if (!selectMode) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSelect?.(item);
+                }}
+
+
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
                   e.currentTarget.style.boxShadow =
@@ -256,6 +264,22 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
                   >
                         Share to Chat
                     </button>
+
+                    {selectMode && (
+                    <Link
+                      to={`/items/${uid}`}
+                      style={{
+                        padding: "6px 10px",
+                        border: "1px solid #ddd",
+                        borderRadius: 6,
+                        textDecoration: "none",
+                        color: "#111",
+                      }}
+                      title="Open details"
+                    >
+                      Details →
+                    </Link>
+                  )}
 
                   {!selectMode && user?.role === "admin" && (
                     <>

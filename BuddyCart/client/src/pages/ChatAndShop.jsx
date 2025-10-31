@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ChatAndShopHeader from "../components/ChatAndShopHeader";
 import DashboardPage from "./DashboardPage";
 import ChatPage from "./ChatPage";
+import productId from "../utils/productId";
 
 const ChatAndShop = () => {
   const [open, setOpen] = useState(false);
@@ -72,10 +73,10 @@ const ChatAndShop = () => {
 
           <div style={{ padding: 16 }}>
             <DashboardPage
-              selectMode
-              selectedId={selectedProduct?._id || selectedProduct?.id || null}
-              onSelect={(item) => setSelectedProduct(item)}
-            />
+   selectMode
+   selectedId={productId(selectedProduct)}
+   onSelect={(item) => setSelectedProduct(item)}
+ />
           </div>
 
 
@@ -168,5 +169,4 @@ const ChatAndShop = () => {
     </>
   );
 };
-
 export default ChatAndShop;

@@ -91,14 +91,31 @@ const ChatPage = ({ selectedProduct = null, shareTick = 0 }) => {
 
   useEffect(() => {
     if (!selectedProduct || !connected || !socketRef.current) return;
-    socketRef.current.emit("showcase:set", { item: selectedProduct });
+    const p = selectedProduct;
+    const attachment = {
+      id: p._id || p.id || String(p.sku || Date.now()),
+      title: p.title,
+      price: p.price,
+      thumbnail: p.thumbnail || p.image || p.images?.[0],
+      category: p.category,
+    };
+    setMyItem(attachment); 
+    socketRef.current.emit("showcase:set", { item: attachment });
   }, [selectedProduct, shareTick, connected]);
 
-  useEffect(() => {
+   useEffect(() => {
     const handler = (e) => {
-      const item = e.detail;
-      if (item && socketRef.current) {
-        socketRef.current.emit("showcase:set", { item });
+      const p = e.detail;
+      if (p && socketRef.current) {
+        const attachment = {
+          id: p._id || p.id || String(p.sku || Date.now()),
+          title: p.title,
+          price: p.price,
+          thumbnail: p.thumbnail || p.image || p.images?.[0],
+          category: p.category,
+        };
+        setMyItem(attachment); 
+        socketRef.current.emit("showcase:set", { item: attachment });
       } else {
         alert("Chat not connected yet — open chat first!");
       }
@@ -106,7 +123,6 @@ const ChatPage = ({ selectedProduct = null, shareTick = 0 }) => {
     window.addEventListener("share-to-showcase", handler);
     return () => window.removeEventListener("share-to-showcase", handler);
   }, []);
-
 
   const onSend = (text) => {
     const t = (text || "").trim();
