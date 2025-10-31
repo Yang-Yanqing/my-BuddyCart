@@ -40,7 +40,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const {user, logOut} = useAuth();
   const {cart}=useCart();
-  const {count}=cart.length;
+  const count=cart.length;
 
   const gotoTag = (tag) => {
     if (!tag) return;

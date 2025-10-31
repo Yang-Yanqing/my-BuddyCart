@@ -1,3 +1,5 @@
+import { API_BASE } from "../config/api";
+
 export function normalizeImage(url) {
     if (!url) return "https://placekitten.com/120/120";
 
@@ -7,10 +9,9 @@ export function normalizeImage(url) {
     return clean;
   }
 
-  const base=process.env.REACT_APP_API_BASE_URL|| "";
-  if (base) {
-    return `${base.replace(/\/$/, "")}/${clean.replace(/^\//, "")}`;
-  }
+   const base = API_BASE || "";
+  if (base) return `${base.replace(/\/$/, "")}/${clean.replace(/^\//, "")}`;
+
 
   return "https://placekitten.com/120/120";
 };

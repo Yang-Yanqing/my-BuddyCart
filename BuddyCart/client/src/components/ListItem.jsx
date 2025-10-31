@@ -42,7 +42,6 @@ const ListItem = ({ selectMode = false, selectedId = null, onSelect }) => {
         setLoading(true);
         const { data } = await http.get("/products", {
           params: { page, limit, _: Date.now() },
-          headers: { "Cache-Control": "no-cache" },
         });
 
         if (ignore) return;

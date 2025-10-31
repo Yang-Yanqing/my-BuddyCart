@@ -20,8 +20,11 @@ http.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   if (typeof config.url === "string") {
-    
-    config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
+    let u = config.url;
+    if (!/^https?:\/\//i.test(u)) {
+      if (!u.startsWith("/")) u = "/" + u;
+    }
+    config.url = u.replace(/([^:]\/)\/+/g, "$1");
   }
   return config;
 });

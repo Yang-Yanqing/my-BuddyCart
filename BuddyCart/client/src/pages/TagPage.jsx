@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { API_BASE } from "../config/api";
+import http from "../config/api";
 
 export default function TagPage() {
   const { tag } = useParams();
@@ -9,11 +9,10 @@ export default function TagPage() {
   useEffect(() => {
 
     async function loadProducts() {
-      const res = await fetch(
-  `$${API_BASE.replace(/\/+$/, "")}/products?category=${encodeURIComponent(tag)}&limit=60`,
-  { headers: { "Cache-Control": "no-cache" }});
-      const data = await res.json();
-      setProducts(data.products || []);
+      const { data } = await http.get("/products", {
+        params: { category: tag, limit: 60, _: Date.now() },
+         });
+      setProducts(data?.products || data || []);
     }
     loadProducts();
   }, [tag]);
