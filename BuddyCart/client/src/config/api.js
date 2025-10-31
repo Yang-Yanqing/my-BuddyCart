@@ -1,23 +1,29 @@
- import axios from "axios";
+
+import axios from "axios";
+
+const IS_PROD = /\.fly\.dev$/i.test(window.location.hostname);
 
 
-export const API_BASE = (process.env.REACT_APP_API_BASE_URL || "/api").replace(/\/+$/, "");
- export const SOCKET_URL  = process.env.REACT_APP_SOCKET_URL  || window.location.origin;
- export const SOCKET_PATH = process.env.REACT_APP_SOCKET_PATH || "/socket.io";
+export const API_BASE = IS_PROD
+  ? "https://buddycart-server.onrender.com/api"
+  : (process.env.REACT_APP_API_BASE_URL || "http://localhost:5005/api");
 
- const http = axios.create({ baseURL: API_BASE });
+export const SOCKET_URL = IS_PROD
+  ? "https://buddycart-server.onrender.com"
+  : (process.env.REACT_APP_SOCKET_URL || "http://localhost:5005");
 
- http.interceptors.request.use((config) => {
-   const token = localStorage.getItem("token");
-   if (token) config.headers.Authorization = `Bearer ${token}`;
+export const SOCKET_PATH = process.env.REACT_APP_SOCKET_PATH || "/socket.io";
 
+const http = axios.create({ baseURL: API_BASE });
+
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   if (typeof config.url === "string") {
-
-  config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
-
-  config.url = config.url.replace(/^\/api\/api\//, "/api/");
+    
+    config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
   }
-   return config;
- });
- 
- export default http;
+  return config;
+});
+
+export default http;

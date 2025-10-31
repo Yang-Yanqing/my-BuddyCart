@@ -18,7 +18,8 @@ const io=new Server(server, {
    cors:{
      origin: allowedOrigins,
      credentials: true,
-     methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
+     methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+     allowedHeaders: ["Authorization", "Content-Type"]
    },
    path: "/socket.io"
  });
