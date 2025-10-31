@@ -38,8 +38,8 @@ Real-time	Socket.io
 Mail	Nodemailer
 Payment	PayPal Sandbox
 
-Then open:
-👉 http://localhost:3000
+To open:
+👉 https://buddycart.fly.dev/
 
 🧩 Roles Overview
 Role	Abilities
