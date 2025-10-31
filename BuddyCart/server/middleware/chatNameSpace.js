@@ -48,11 +48,11 @@ module.exports = (io) => {
         id: `srv_${Date.now()}`,
         type: msg.type || "chat",
         text: msg.text,
-        sender: {
-          userId:socket.data.user.userId,
-          id:socket.data.user.userId,
-          avatar:socket.data.user.avatar||null,
-        },
+        user: {
+          userId: socket.data.user.userId,
+          name: socket.data.user.name,
+          avatar: socket.data.user.avatar || null,
+         },
          ts: Date.now(),
       };
     

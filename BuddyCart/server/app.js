@@ -72,7 +72,7 @@ const mongoose = require('mongoose');
   res.json({
     hasEnv: !!uri,
     sample: masked,              
-    host: m ? m[1] : null,       
+    host: m ? m[1] : null,      
     dbName: m ? (m[2] || '(none)') : null 
   });
 });

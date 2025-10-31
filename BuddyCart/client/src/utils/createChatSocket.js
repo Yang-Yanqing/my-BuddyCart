@@ -1,51 +1,27 @@
-
 import { io } from "socket.io-client";
 import { SOCKET_URL, SOCKET_PATH } from "../config/api";
 
+export function createChatSocket({ token, user, roomId }) {
+  const nsURL = `${SOCKET_URL}/chat`; 
 
-export function createChatSocket({ baseURL, token, user, roomId = "lobby" } = {}) {
- 
-  const origin = (baseURL || SOCKET_URL || window.location.origin).replace(/\/+$/, "");
- 
-  const url = `${origin}/chat`;
-
-  const socket = io(url, {
-    
-    path: SOCKET_PATH || "/socket.io",
-    transports: ["websocket", "polling"],
-
-  
+  const socket = io(nsURL, {
+    path: SOCKET_PATH,               
+    transports: ["websocket"],       
+    query: { roomId: roomId || "lobby" },
     auth: {
-      token: token || localStorage.getItem("token") || "",
-      name: user?.name || "",
-      avatar: user?.profileImage || "",
+      token,
+      name: user?.name || user?.email?.split?.("@")?.[0] || "User",
+      avatar: user?.profileImage || user?.avatar || null,
     },
-
-    
-    query: { roomId },
-
-   
+    extraHeaders: token ? { Authorization: `Bearer ${token}` } : {},
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
-    timeout: 10000,
-    withCredentials: false,
-  });
-
-  socket.on("connect", () => {
-    try {
-      socket.emit("join_room", { roomId });
-    } catch (_) {
-      
-    }
   });
 
   socket.on("connect_error", (err) => {
-    
-    console.error("connect_error:", err?.message || err);
+    console.error("connect_error", err?.message || err);
   });
 
   return socket;
 }
-
-export default createChatSocket;
