@@ -9,6 +9,7 @@ npm-debug.log
 .env.development
 .env.production
 .env.test
+.env.*
 # macOS
 .DS_Store
 .AppleDouble
