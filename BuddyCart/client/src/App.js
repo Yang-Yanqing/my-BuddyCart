@@ -18,7 +18,7 @@ import VendorDashboard from "./pages/VendorDashboard";
 import Profile from "./pages/ProfilePage";
 import MyShopPage from "./pages/MyShopPage";
 import AdminRoleRequests from "./pages/AdminRoleRequests";
-
+import CheckoutPage from "./pages/CheckoutPage"
 import "./styles/App.css";
 import { ItemsProvider } from "./context/ItemsContext";
 import { CartProvider } from "./context/CartContext";
@@ -61,6 +61,7 @@ export default function App() {
                 <Route path="/auth/register" element={<RegisterPage />} />
                 <Route path="/auth/login" element={<LoginPage />} />
                 <Route path="/chatandshop/:roomId?"element={<ChatAndShop />}/>
+                <Route path="/cart" element={<CheckoutPage />} />
                 <Route path="/profile"element={<ProtectedRoute roles={["admin","vendor","customer"]}><Profile /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>}/>
                 <Route path="/admin/role-requests" element={<ProtectedRoute roles={["admin"]}><AdminRoleRequests/></ProtectedRoute>}/>
