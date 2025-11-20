@@ -3,7 +3,7 @@
 // Needs: npm i axios dotenv
 const axios = require('axios').default;
 const qs = require('querystring');
-require('dotenv').config();
+// require('dotenv').config();
 
 const BASE = process.env.BASE_URL || 'http://localhost:4000';
 

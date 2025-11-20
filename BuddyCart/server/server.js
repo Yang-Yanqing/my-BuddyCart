@@ -1,9 +1,10 @@
-require("dotenv").config();
+require("./config/env");
 
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
 const { seedIfEmpty } = require("./db/seed");
+const { connectDB }=require("./config/db");
 
 const server = http.createServer(app);
 
@@ -29,7 +30,12 @@ require("./middleware/chatNameSpace")(io);
 const PORT = process.env.PORT || 5005;
 const HOST = process.env.HOST || "0.0.0.0";
 
-server.listen(PORT, HOST, async () => {
+(async()=>{
+  
+ try {
+    await connectDB();
+    
+  server.listen(PORT, HOST, async () => {
   console.log(`Server listening on ${HOST}:${PORT}`);
   if (process.env.SEED_ON_START === "true") {
     try {
@@ -40,5 +46,13 @@ server.listen(PORT, HOST, async () => {
     }
   }
 });
+}
+catch(err){
+  console.error("Failed to start server:", err);
+  process.exit(1);
+}
+})();
+
+
 
 module.exports = { server, io, app };
