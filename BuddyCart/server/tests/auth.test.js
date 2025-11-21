@@ -1,6 +1,12 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect, beforeAll} from 'vitest';
 import request from 'supertest';
 import app from '../app';
+import User from '../models/User.model'
+
+beforeAll(async()=>{
+  await User.deleteMany({});
+})
+
 
 describe('Auth /api/auth',()=>{
     it("Should register a new user successfully",async()=>{
