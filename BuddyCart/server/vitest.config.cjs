@@ -1,8 +1,10 @@
 /** @type {import('vitest/config').UserConfig} */
 
-module.exports=defineConfig(
+const config=
     {
         test:{
             setupFiles:["./tests/setupTest.js"],
         },
-    });
+    };
+
+module.exports=config;
