@@ -1,8 +1,7 @@
 import { beforeAll, afterAll } from "vitest";
 import "../config/env";          
-
-
 import db from "../config/db";
+import mongoose from "mongoose";
 
 const { connectDB, disconnectDB } = db;  
 
