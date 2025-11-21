@@ -1,3 +1,5 @@
+![Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/test.yml/badge.svg)
+
 🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
 🎯 Project Overview
 
