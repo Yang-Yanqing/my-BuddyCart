@@ -1,4 +1,4 @@
-const {defineConfig}=require("vitest/config");
+/** @type {import('vitest/config').UserConfig} */
 
 module.exports=defineConfig(
     {
