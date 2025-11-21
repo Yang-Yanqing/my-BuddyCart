@@ -25,6 +25,6 @@ mongoose.connection.on("disconnected", () => console.warn("⚠️ MongoDB discon
 //   } catch (err) {
 //     console.error("❌ Failed to connect to MongoDB:", err.name, err.message);
 //   }
-// })();
+// })()
 
 module.exports = mongoose;
