@@ -10,6 +10,7 @@
 ![Vitest](https://img.shields.io/badge/Tests-Vitest-6E9F18?logo=vitest&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 ![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render&logoColor=white)
+![Fly.io](https://img.shields.io/badge/Deploy-Fly.io-007AFF?logo=flydotio&logoColor=white)
 
 ---
 
@@ -61,11 +62,11 @@ MongoDB Atlas
 
 BuddyCart highlights practical engineering skills:
 
-- Designing **secure** & **scalable** backend systems  
-- Managing **real-time** state sync across API + WebSocket  
-- Building **clean controllers** with consistent data flow  
-- Cloud deployment using **Render + MongoDB Atlas**  
-- Setting up **professional CI/CD** with tests + coverage  
+- Designing secure & scalable backend systems
+- Managing real-time state sync across API + WebSocket
+- Building clean, maintainable controllers with consistent request–response data flow
+- Cloud deployment across Render (API), Fly.io (client), and MongoDB Atlas (database)
+- Setting up professional CI/CD with tests and coverage reporting
 
 ---
 
