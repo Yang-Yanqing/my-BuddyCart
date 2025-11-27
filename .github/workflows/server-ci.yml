@@ -42,6 +42,7 @@ jobs:
           npm run test:coverage
         env:
           NODE_ENV: test
+          MONGO_URI: ${{ secrets.MONGO_URI_TEST }}
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
