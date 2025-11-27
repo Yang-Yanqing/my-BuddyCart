@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'server/**'
+      - 'BuddyCart/server/**'
       - '.github/workflows/server-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'server/**'
+      - 'BuddyCart/server/**'
 
 jobs:
   ci-cd:
@@ -24,21 +24,21 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: BuddyCart/server/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd server
+          cd BuddyCart/server
           npm ci
 
       - name: Run ESLint
         run: |
-          cd server
+          cd BuddyCart/server
           npm run lint
 
       - name: Run tests with coverage
         run: |
-          cd server
+          cd BuddyCart/server
           npm run test:coverage
         env:
           NODE_ENV: test
@@ -47,14 +47,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: server-coverage
-          path: server/coverage
+          path: BuddyCart/server/coverage
 
       - name: Upload coverage to Codecov
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: server/coverage
+          directory: BuddyCart/server/coverage
 
       - name: Deploy to Render
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
