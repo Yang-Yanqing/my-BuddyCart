@@ -1,46 +1,38 @@
+# 🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
+
 <!-- CI & Coverage -->
-![Run Server Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/server-ci.yml/badge.svg)
-[![codecov](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDKXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
+![CI](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/server-ci.yml/badge.svg)
+[![Coverage](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDKXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
 
-<!-- Tech Stack (core + credibility) -->
-![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
-![Socket.IO](https://img.shields.io/badge/Realtime-Socket.IO-010101?logo=socket.io&logoColor=white)
+BuddyCart is a backend-first full-stack **e-commerce + real-time chat** platform designed to demonstrate
+enterprise-grade architecture, clean data flow, reliable automation, and production-ready engineering.
 
-<!-- Engineering Badges -->
-![Dockerized](https://img.shields.io/badge/Backend-Dockerized-2496ED?logo=docker)
-![Healthchecks](https://img.shields.io/badge/Health-%2Fhealth%20%7C%20%2Fready-brightgreen)
-
-<!-- Deployment -->
-![Render](https://img.shields.io/badge/API-Render-46E3B7?logo=render&logoColor=white)
-![Fly.io](https://img.shields.io/badge/Frontend-Fly.io-007AFF?logo=flydotio&logoColor=white)
+It focuses on **secure APIs**, **authentication/authorization**, **real-time communication**, and a complete CI/CD workflow across cloud environments.
 
 ---
 
-# 🛒 BuddyCart  
-A minimal full-stack **e-commerce + real-time chat** platform designed to demonstrate:
+## 💻 Tech Stack (Production Grade)
 
-- **Backend architecture**
-- **Authentication / authorization**
-- **Real-time communication**
-- **Production-ready CI/CD**
-
-Backend-first design focused on **clean data flow**, **secure APIs**, **reliable infrastructure**.
+**Frontend:** React · Context API · Fly.io  
+**Backend:** Node.js (Express 5) · REST API · WebSocket (Socket.IO)  
+**Database:** MongoDB Atlas (Cloud)  
+**Infra / DevOps:** Docker · GitHub Actions · Render (API) · Fly.io (Client)  
+**Security:** JWT Auth · RBAC · Ownership Enforcement  
+**Quality:** Automated Tests · Code Coverage · Health & Readiness Probes
 
 ---
 
 ## 🚀 Features
 
-- **JWT Authentication** for both REST API and WebSocket  
-- **Role-Based Access Control** (admin / vendor / customer)  
-- **Product CRUD** with ownership enforcement  
-- **Real-time Chat** (`/chat` namespace with product sharing)  
-- **Lazy Seeding** when DB is empty  
-- **Modular API Architecture** (auth, products, vendor, checkout, preferences)  
-- **Health & Ready Endpoints**  
-  - `/health` – liveness  
-  - `/ready` – readiness (checks Mongo connection)
+- **JWT Authentication** (HTTP + WebSocket)
+- **Role-Based Access Control** (admin / vendor / customer)
+- **Product CRUD** with strict ownership validation
+- **Real-Time Chat System** (`/chat` namespace with product sharing)
+- **Lazy DB Seeding** on first boot
+- **Modular API Architecture** (auth, products, vendor, checkout, preferences)
+- **Health & Readiness Endpoints**  
+  - `/health` → liveness  
+  - `/ready` → MongoDB connection check
 
 ---
 
@@ -48,48 +40,50 @@ Backend-first design focused on **clean data flow**, **secure APIs**, **reliable
 
 Client (React, Fly.io)
 ↕ REST / WebSocket
-Server (Node + Express, Render)
+Server (Node.js + Express 5, Render)
 ↕
 MongoDB Atlas (Cloud Database)
-- JWT is validated for both HTTP routes and Socket.IO  
+
+- JWT validated consistently for HTTP routes and Socket.IO events  
 - Controllers enforce **role + ownership** rules  
-- Socket.IO propagates product events in real time  
-- CI pipeline runs tests + uploads coverage on every push  
+- Socket.IO propagates product updates in real time  
+- CI pipeline runs tests + uploads coverage + validates build on every push  
 
 ---
 
 ## 📦 Modules
 
-- **Auth** – registration, login, token refresh  
-- **Products** – CRUD + admin overrides  
-- **Chat** – real-time messaging with product preview  
-- **Vendor** – shop management  
-- **Checkout** – payment mock + order flow  
-- **Admin** – user elevation + role request handling  
+- **Auth** → registration, login, token refresh  
+- **Products** → CRUD + admin overrides  
+- **Chat** → live messaging, product preview sharing  
+- **Vendor** → shop configuration & product ownership  
+- **Checkout** → mock payment + order flow  
+- **Admin** → user elevation & role request processing  
 
 ---
 
 ## 🛡 Production-Ready Engineering
 
-- Automated CI (GitHub Actions)  
-- Coverage reporting (Codecov)  
-- Dockerized backend  
-- Liveness + readiness probes  
-- Cloud deployment across **Render**, **Fly.io**, **MongoDB Atlas**  
-- Environment-based configuration + secret protection  
+- Automated CI pipeline (GitHub Actions)  
+- Test coverage reporting (Codecov)  
+- Dockerized backend application  
+- Health & readiness probes  
+- Multi-cloud deployment across **Render**, **Fly.io**, **MongoDB Atlas**  
+- Environment-based configuration & secret management  
 
 ---
 
 ## 📈 Future Improvements
 
-- E2E tests  
-- Better recommendation logic  
+- End-to-End tests  
+- Product recommendation logic  
 - Persistent chat history  
-- AWS App Runner deployment (in progress)
+- Optional AWS App Runner deployment  
 
 ---
 
-## 👨‍💻 Author  
+## 👨‍💻 Author
+
 **Yang Yanqing (杨彦青)** — Full-Stack Developer  
 📍 Berlin, Germany  
 🔗 GitHub: https://github.com/Yang-Yanqing
