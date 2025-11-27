@@ -1,21 +1,22 @@
-![Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/test.yml/badge.svg)
-[![codecov](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
+<p align="left">
+  <!-- Backend / Runtime -->
+  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb" height="45" />
+  
+  <!-- Auth / Realtime -->
+  <img src="https://skillicons.dev/icons?i=jwt" height="45" />
+  <img src="https://skillicons.dev/icons?i=socketio" height="45" />
 
-<!-- Tech Stack -->
-![Node](https://img.shields.io/badge/node-20.x-brightgreen)
-![Express](https://img.shields.io/badge/express-5.x-blue)
-![MongoDB](https://img.shields.io/badge/mongodb-atlas-success)
-![Socket.IO](https://img.shields.io/badge/socket.io-enabled-lightgrey)
+  <!-- Testing / CI -->
+  <img src="https://skillicons.dev/icons?i=vitest" height="45" />
+  <img src="https://skillicons.dev/icons?i=githubactions" height="45" />
 
-<!-- Code Quality -->
-![ESLint](https://img.shields.io/badge/code%20style-ESLint-blue)
-![Prettier](https://img.shields.io/badge/formatter-Prettier-ff69b4)
+  <!-- Deployment -->
+  <img src="https://skillicons.dev/icons?i=render,flyio" height="45" />
 
-<!-- Project Meta -->
-![Repo Size](https://img.shields.io/github/repo-size/Yang-Yanqing/my-BuddyCart)
-![Last Commit](https://img.shields.io/github/last-commit/Yang-Yanqing/my-BuddyCart)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+  <!-- Tools -->
+  <img src="https://skillicons.dev/icons?i=eslint,prettier" height="45" />
+</p>
+
 
 🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
 🎯 Project Overview
