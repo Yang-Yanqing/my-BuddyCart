@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: buddycart-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  server:
+    build:
+      context: ./BuddyCart/server
+      dockerfile: Dockerfile
+    container_name: buddycart-server
+    restart: always
+    env_file:
+          - ./BuddyCart/server/.env.docker
+    environment:
+      # Fallback: If the line is not written in `.env.docker`, use the local Mongo container instead.
+      - MONGO_URI=mongodb://mongo:27017/BuddyCart
+    depends_on:
+      - mongo
+    ports:
+      - "5000:5000"
+
+  client:
+    build:
+      context: ./BuddyCart/client
+      dockerfile: Dockerfile
+    container_name: buddycart-client
+    restart: always
+    depends_on:
+      - server
+    ports:
+      # Access via browser at [http://localhost:3000](http://localhost:3000)
+      # Inside the container, Nginx still listens on port 80
+      - "3000:80"
+
+volumes:
+  mongo_data:

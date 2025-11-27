@@ -3,8 +3,11 @@ require("./db");
 
 const express = require("express");
 const cors = require("cors");
+const httpLogger=require('./middleware/httpLogger');
+const healthRoutes = require("./routes/health.routes");
 
 const app = express();
+
 
 
 const allowedOrigins = [
@@ -29,8 +32,10 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-
+app.use(httpLogger);
 app.use(cors(corsOptions));
+app.use(express.json());
+app.use("/", healthRoutes);
 
 
 require("./config")(app);

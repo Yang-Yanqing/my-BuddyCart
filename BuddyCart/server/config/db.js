@@ -1,5 +1,5 @@
-// config/db.js
 const mongoose = require("mongoose");
+const logger = require("../utils/logger");
 
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 
@@ -7,33 +7,48 @@ if (!MONGO_URI) {
   throw new Error("[db] MONGO_URI is missing in the environment variables!");
 }
 
+
 mongoose.set("strictQuery", true);
 
+let isConnected = false;
+
 mongoose.connection.on("connected", () => {
-  console.log("[db] ✅ MongoDB connected successfully. DB name:", mongoose.connection.name);
+  isConnected = true;
+  logger.info(
+    { dbName: mongoose.connection.name },
+    "[db] ✅ MongoDB connected successfully."
+  );
 });
 
 mongoose.connection.on("error", (err) => {
-  console.error("[db] ❌ MongoDB connection error:", err.message);
+  isConnected = false;
+  logger.error({ err }, "[db] ❌ MongoDB connection error");
 });
 
 mongoose.connection.on("disconnected", () => {
-  console.warn("[db] ⚠️ MongoDB disconnected");
+  isConnected = false;
+  logger.warn("[db] ⚠️ MongoDB disconnected");
 });
 
 async function connectDB() {
-  console.log("[db] NODE_ENV =", process.env.NODE_ENV);
-  console.log("[db] Connecting to:", MONGO_URI);
+  logger.info(
+    { nodeEnv: process.env.NODE_ENV, mongoUri: MONGO_URI },
+    "[db] Connecting to MongoDB"
+  );
 
   await mongoose.connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 10000, 
+    serverSelectionTimeoutMS: 10000,
   });
 }
 
 async function disconnectDB() {
   await mongoose.connection.close();
-  console.log("[db] Mongo connection closed");
+  isConnected = false;
+  logger.info("[db] Mongo connection closed");
 }
 
+function getDbStatus() {
+  return isConnected;
+}
 
-module.exports = { connectDB, disconnectDB, mongoose };
+module.exports = { connectDB, disconnectDB, getDbStatus, mongoose };
