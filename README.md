@@ -1,6 +1,22 @@
 ![Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/test.yml/badge.svg)
 [![codecov](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
 
+<!-- Tech Stack -->
+![Node](https://img.shields.io/badge/node-20.x-brightgreen)
+![Express](https://img.shields.io/badge/express-5.x-blue)
+![MongoDB](https://img.shields.io/badge/mongodb-atlas-success)
+![Socket.IO](https://img.shields.io/badge/socket.io-enabled-lightgrey)
+
+<!-- Code Quality -->
+![ESLint](https://img.shields.io/badge/code%20style-ESLint-blue)
+![Prettier](https://img.shields.io/badge/formatter-Prettier-ff69b4)
+
+<!-- Project Meta -->
+![Repo Size](https://img.shields.io/github/repo-size/Yang-Yanqing/my-BuddyCart)
+![Last Commit](https://img.shields.io/github/last-commit/Yang-Yanqing/my-BuddyCart)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![License](https://img.shields.io/badge/license-MIT-yellow)
+
 🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
 🎯 Project Overview
 
