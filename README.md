@@ -1,104 +1,84 @@
-<p align="left">
-  <!-- Backend / Runtime -->
-  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb" height="45" />
-  
-  <!-- Auth / Realtime -->
-  <img src="https://skillicons.dev/icons?i=jwt" height="45" />
-  <img src="https://skillicons.dev/icons?i=socketio" height="45" />
+<!-- Tests & Coverage -->
+![Run Server Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/server-ci.yml/badge.svg)
+[![codecov](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDKXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
 
-  <!-- Testing / CI -->
-  <img src="https://skillicons.dev/icons?i=vitest" height="45" />
-  <img src="https://skillicons.dev/icons?i=githubactions" height="45" />
+<!-- Tech Stack -->
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-Realtime-010101?logo=socket.io&logoColor=white)
+![Vitest](https://img.shields.io/badge/Tests-Vitest-6E9F18?logo=vitest&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render&logoColor=white)
 
-  <!-- Deployment -->
-  <img src="https://skillicons.dev/icons?i=render,flyio" height="45" />
+---
 
-  <!-- Tools -->
-  <img src="https://skillicons.dev/icons?i=eslint,prettier" height="45" />
-</p>
+# 🛒 BuddyCart  
+A minimal full-stack **e-commerce + real-time chat** platform, designed to demonstrate **backend architecture**, **authentication logic**, and **real-time communication** using Socket.IO.
+
+Backend-first design.  
+Focus on **clean data flow**, **secure APIs**, and **production-ready CI/CD**.
+
+---
+
+## 🚀 Features
+
+- **JWT Authentication** (shared by REST API + WebSocket)
+- **Role-Based Access Control** (admin/vendor/customer)
+- **Product CRUD** with ownership enforcement
+- **Real-time Chat** with Socket.IO (product sharing, rating, contextual messaging)
+- **Lazy Data Seeding** when DB is empty
+- **Modular API Architecture** (auth, products, chat, preferences)
+
+---
+
+## 🧱 System Overview
+
+Client (React)
+↕ REST / WebSocket
+Server (Node + Express)
+↕
+MongoDB Atlas
 
 
-🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
-🎯 Project Overview
+- JWT is verified for both HTTP routes and Socket.IO connections  
+- Controllers enforce role + ownership before DB operations  
+- Real-time events broadcast updates to authorized clients  
+- CI pipeline runs tests & uploads coverage automatically  
 
-BuddyCart is a full-stack e-commerce and chat platform built as a capstone project to demonstrate enterprise-grade architecture, end-to-end logic, and full-stack engineering skills.
-Rather than focusing on a consumer-facing UI, the project emphasizes scalable backend design, clean data flow, and cross-layer integration between authentication, product management, and real-time communication.
+---
 
-🧱 System Architecture
-Layer	Technology	Key Features
-Frontend	React, React Router, Context API	Role-based routing, protected pages, integrated chat & showcase view
-Backend	Node.js (Express 5), MongoDB (Mongoose)	RESTful APIs, ACL enforcement, JWT authentication
-Real-Time	Socket.IO (namespace /chat)	Authenticated bi-directional messaging, product showcase exchange
-Security	JWT (access tokens), role-based access control	Unified auth for both HTTP and WebSocket layers
-Deployment	Render (API) + MongoDB Atlas + Vercel (client)	Production-ready CI/CD configuration
-⚙️ Technical Highlights
+## 📦 Modules
 
-🔐 Unified Authentication Layer — Single JWT verification for both API and WebSocket connections.
+- **Auth** – login, registration, token verification  
+- **Products** – CRUD, admin overrides, ownership logic  
+- **Chat** – real-time namespace `/chat` with product showcase  
+- **Preferences** – color theme + simple behavioral analytics  
 
-🧩 Role-Based Access Control (RBAC) — Admins manage all products; vendors manage their own; customers handle profiles only.
+---
 
-📦 Product Ownership Logic — Each product is bound to its creator (vendor/admin), ensuring clear resource separation.
+## 🎯 Why This Project Matters
 
-🪄 Lazy Data Seeding — When the product database is empty, the server auto-fetches and populates demo data.
+BuddyCart highlights practical engineering skills:
 
-💬 Real-Time Chat Integration — Each chat room supports product showcasing, rating, and contextual conversation.
+- Designing **secure** & **scalable** backend systems  
+- Managing **real-time** state sync across API + WebSocket  
+- Building **clean controllers** with consistent data flow  
+- Cloud deployment using **Render + MongoDB Atlas**  
+- Setting up **professional CI/CD** with tests + coverage  
 
-🎨 Personalized UI Behavior — User color theme adapts dynamically to interaction patterns (male/female category click preferences).
+---
 
-🧠 Clean Data Flow — End-to-end consistency between REST endpoints, database operations, and WebSocket updates.
+## 📈 Future Improvements
 
-🚀 Cloud Deployment — Backend deployed on Render; MongoDB Atlas database; frontend hosted separately for modular scaling.
+- Add integration tests  
+- Docker support  
+- Persistent chat history  
+- Better recommendation logic  
 
-🗺️ Data Flow Design
+---
 
-Every user action is traceable through a clear, consistent pipeline:
-
-Frontend Trigger: React component dispatches a REST or WebSocket event (e.g., product CRUD or chat message).
-
-Middleware Verification: requireAuth and verifyAccessToken decode JWT and inject real-time user context.
-
-Controller Execution: Validates ownership and role before performing DB operations or emitting socket events.
-
-Database / Socket Response: Updates stored data and pushes the result back to authorized clients in real time.
-
-This transparent flow ensures that state is synchronized between all connected layers — API, database, and UI.
-
-🧩 Core Modules
-
-Auth Module: Register, login, and JWT-protected routes for all user roles.
-
-Product Module: Full CRUD with ownership enforcement; admin can sync or reset datasets.
-
-Chat Namespace: Authenticated socket connection with real-time product showcase, rating system, and state synchronization.
-
-User Preference Module: Color theme personalization logic based on behavioral analytics.
-
-🧠 Engineering Focus
-
-BuddyCart demonstrates not just how to build a working product, but how to engineer a scalable system.
-It reflects key production-level abilities:
-
-Designing maintainable backend architecture
-
-Implementing secure, real-time client communication
-
-Managing complex data flow between multiple layers
-
-Deploying and debugging full-stack systems in a cloud environment
-
-📈 Future Improvements
-
-Add unit/integration tests with Jest & Supertest.
-
-Introduce Docker containerization for local and production parity.
-
-Implement message persistence in chat namespace.
-
-Expand recommendation logic via user preference analytics.
-
-👨‍💻 Author
-
-Yang Yanqing (杨彦青)
-Full-Stack Web Developer | React · Node.js · MongoDB · Express
-📍 Based in Berlin, Germany
-🔗 GitHub: @Yang-Yanqing
+## 👨‍💻 Author  
+Yang Yanqing (杨彦青) — Full-Stack Developer  
+📍 Berlin, Germany  
+🔗 GitHub: https://github.com/Yang-Yanqing
