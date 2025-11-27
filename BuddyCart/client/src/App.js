@@ -28,7 +28,7 @@ import { ThemeProvider } from "../src/context/UserContext"
 import AboutPage from "./pages/AboutPage/AboutPage";
 
 
-function PageWrapper({ isSidebarOpen, toggleSidebar }) {
+function PageWrapper({isSidebarOpen,toggleSidebar}) {
   return (
     <div className="App">
       <Navbar toggleSidebar={toggleSidebar} />
