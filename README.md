@@ -1,4 +1,5 @@
 ![Tests](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
 
 🛒 BuddyCart — Full-Stack E-Commerce & Real-Time Communication Platform
 🎯 Project Overview
