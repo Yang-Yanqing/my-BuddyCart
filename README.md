@@ -4,6 +4,8 @@
 ![CI](https://github.com/Yang-Yanqing/my-BuddyCart/actions/workflows/server-ci.yml/badge.svg)
 [![Coverage](https://codecov.io/github/Yang-Yanqing/my-BuddyCart/graph/badge.svg?token=J6NQDKXX20Y)](https://codecov.io/github/Yang-Yanqing/my-BuddyCart)
 
+### 🌍 AWS Deployment (Frontend)
+
 BuddyCart is a backend-first full-stack **e-commerce + real-time chat** platform designed to demonstrate
 enterprise-grade architecture, clean data flow, reliable automation, and production-ready engineering.
 
