@@ -13,6 +13,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://buddycart.fly.dev",
   "https://buddycart-client.netlify.app",
+  "http://buddycart-frontend-demo-yang.s3-website.eu-central-1.amazonaws.com"
 ];
 
 const io = new Server(server, {
