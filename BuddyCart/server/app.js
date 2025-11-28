@@ -15,7 +15,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://buddycart.fly.dev",
   "https://buddycart-client.netlify.app",
-  "http://buddycart-frontend-demo-yang.s3-website.eu-central-1.amazonaws.com"
+  "http://buddycart-frontend-demo-yang.s3-website.eu-central-1.amazonaws.com",
+  "https://d34e3l3zzf4dvm.cloudfront.net"
 ];
 
 
