@@ -89,7 +89,7 @@ const loginUser = async (req, res, next) => {
     email = String(email || "").trim().toLowerCase();
 
     const user = await User.findOne({ email }).select(
-      "name email role profileImage password"
+      "+password name email role profileImage"
     );
     if (!user) return res.status(400).json({ message: "User not found" });
 
