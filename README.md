@@ -107,7 +107,7 @@ flowchart LR
     B -->|HTTPS| CF
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
-    B <-->|WebSocket\n(Socket.IO)| API
+    B <-->|WebSocket(Socket.IO)| API
 ```
 ---
 
