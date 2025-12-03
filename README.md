@@ -88,15 +88,19 @@ MongoDB Atlas (Cloud Database)
 
 ```mermaid
 flowchart LR
-    subgraph Client
+    subgraph Client[Client Layer]
         B[Browser\nReact SPA]
     end
 
-    subgraph Edge[AWS Edge]
+    subgraph Edge[AWS Edge Layer]
         CF[CloudFront\nCDN & HTTPS]
     end
 
-    subgraph App[AWS / Render Layer]
+    subgraph FE[AWS Frontend Hosting]
+        S3[S3 Bucket\nStatic React Build]
+    end
+
+    subgraph App[AWS Application Layer]
         API[BuddyCart API\nNode.js + Express 5\nDocker on EC2]
     end
 
@@ -105,9 +109,10 @@ flowchart LR
     end
 
     B -->|HTTPS| CF
+    CF -->|GET index.html / static assets| S3
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
-    B <-->|WebSocket / Socket.IO| API
+    B <-->|WebSocket\n(Socket.IO)| API
 ```
 ---
 
