@@ -108,8 +108,90 @@ flowchart LR
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
     B <-->|WebSocket\n(Socket.IO)| API
-```
 
+---
+
+```md
+## 🗄 Data Model (MongoDB Atlas)
+
+```mermaid
+erDiagram
+    USER {
+      string _id
+      string email
+      string passwordHash
+      string role
+      date   createdAt
+    }
+
+    PRODUCT {
+      string _id
+      string name
+      string description
+      number price
+      string vendorId
+      date   createdAt
+    }
+
+    ORDER {
+      string _id
+      string userId
+      number totalAmount
+      string status
+      date   createdAt
+    }
+
+    ORDER_ITEM {
+      string _id
+      string orderId
+      string productId
+      number quantity
+      number unitPrice
+    }
+
+    CHAT_MESSAGE {
+      string _id
+      string roomId
+      string senderId
+      string text
+      string productId
+      date   createdAt
+    }
+
+    USER ||--o{ ORDER : places
+    ORDER ||--o{ ORDER_ITEM : contains
+    USER ||--o{ PRODUCT : "owns (vendor)"
+    USER ||--o{ CHAT_MESSAGE : sends
+    PRODUCT ||--o{ CHAT_MESSAGE : "shared-in"
+rust
+
+---
+
+```md
+## 🔁 Checkout Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User (Browser)
+    participant C as Client (React)
+    participant A as API (Express)
+    participant DB as MongoDB Atlas
+    participant P as PayPal API
+
+    U->>C: Click "Checkout"
+    C->>A: POST /api/orders
+    A->>DB: Validate products
+    DB-->>A: OK
+    A->>P: Create PayPal payment
+    P-->>A: Approval URL
+    A-->>C: Order + redirect URL
+    U->>P: Approve payment
+    P->>A: Webhook: success
+    A->>DB: Update order status=paid
+    A-->>C: (WebSocket) status update
+markdown
+
+---
 
 ## 👨‍💻 Author
 
