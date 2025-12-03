@@ -210,27 +210,61 @@ erDiagram
 ```
 ---
 
-## 🔁 Checkout Flow
+## 🔁 Role Request Flow (customer → vendor/admin)
 
 ```mermaid
 sequenceDiagram
-    participant U as User (Browser)
-    participant C as Client (React)
-    participant A as API (Express)
-    participant DB as MongoDB Atlas
-    participant P as PayPal API
+    participant U as User (Customer)
+    participant C as Client (React SPA)
+    participant API as BuddyCart API
+    participant RR as RoleRequest\n(MongoDB)
+    participant USR as User Collection
+    participant ADM as Admin (Dashboard)
+    participant MAIL as Mailer Service
 
-    U->>C: Click "Checkout"
-    C->>A: POST /api/orders
-    A->>DB: Validate products
-    DB-->>A: OK
-    A->>P: Create PayPal payment
-    P-->>A: Approval URL
-    A-->>C: Order + redirect URL
-    U->>P: Approve payment
-    P->>A: Webhook: success
-    A->>DB: Update order status=paid
-    A-->>C: (WebSocket) status update
+    %% --- Registration with desired role ---
+
+    U->>C: Sign up (name, email, password, desiredRole="vendor")
+    C->>API: POST /auth/register
+    API->>USR: create User(role="customer")
+    alt desiredRole is vendor/admin
+        API->>RR: create RoleRequest\n{ user, requestedRole, status="pending" }
+        API->>MAIL: notifyAdminsNewRoleRequest()
+        API-->>C: 201 "role request pending, current role = customer"
+    else no desiredRole
+        API-->>C: 201 "user created as customer"
+    end
+
+    %% --- Later: user sends/updates role request ---
+
+    U->>C: Click "Request vendor/admin"
+    C->>API: POST /me/role-request\n(requestedRole, reason)
+    API->>RR: findOne({ user, status:"pending" })
+    alt existing pending request
+        API->>RR: update requestedRole / reason
+        RR-->>API: updated doc
+        API-->>C: 200 { reused: true, data: RoleRequest }
+    else no pending request
+        API->>RR: create new RoleRequest(status="pending")
+        API->>MAIL: notifyAdminsNewRoleRequest()
+        RR-->>API: new doc
+        API-->>C: 201 { reused: false, data: RoleRequest }
+    end
+
+    %% --- Admin review flow ---
+
+    ADM->>API: GET /admin/role-requests?status=pending
+    API->>RR: find({ status:"pending" }).populate("user")
+    RR-->>API: pending list
+    API-->>ADM: list with user info
+
+    ADM->>API: POST /admin/role-requests/:id/approve
+    API->>RR: set status="closed", reviewStatus="approved", reviewBy=adminId
+    API->>USR: update user.role = requestedRole
+    API->>MAIL: notifyApplicantResult()
+    API-->>ADM: 200 { message:"approved", data: RoleRequest }
+
+    note over U,ADM: If admin rejects instead of approves,<br/>status becomes "closed" + reviewStatus="rejected",<br/>user.role stays "customer".
 ```
 ---
 
