@@ -125,7 +125,7 @@ erDiagram
       string  name
       string  email
       string  passwordHash
-      string  role           // admin | vendor | customer
+      string  role           %% admin | vendor | customer
       boolean isVerified
       date    createdAt
     }
@@ -134,7 +134,7 @@ erDiagram
       string  _id
       string  name
       string  slug
-      string  ownerId        // USER._id
+      string  ownerId        %% USER._id
       date    createdAt
     }
 
@@ -147,14 +147,14 @@ erDiagram
       number  stock
       number  rating
       string  availabilityStatus
-      string  ownerId        // USER._id (vendor)
-      string  shopId         // SHOP._id
+      string  ownerId        %% USER._id (vendor)
+      string  shopId         %% SHOP._id
       date    createdAt
     }
 
     REVIEW {
       string  _id
-      string  productId      // PRODUCT._id
+      string  productId      %% PRODUCT._id
       number  rating
       string  comment
       string  reviewerName
@@ -164,16 +164,16 @@ erDiagram
 
     ROLE_REQUEST {
       string  _id
-      string  userId         // USER._id
-      string  requestedRole  // vendor | admin
-      string  status         // pending | closed
-      string  reviewStatus   // approved | rejected
+      string  userId         %% USER._id
+      string  requestedRole  %% vendor | admin
+      string  status         %% pending | closed
+      string  reviewStatus   %% approved | rejected
       date    reviewDate
     }
 
     ORDER {
       string  _id
-      string  userId         // USER._id
+      string  userId         %% USER._id
       number  totalAmount
       string  status         // pending | paid | cancelled
       date    createdAt
