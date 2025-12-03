@@ -121,52 +121,92 @@ flowchart LR
 ```mermaid
 erDiagram
     USER {
-      string _id
-      string email
-      string passwordHash
-      string role
-      date   createdAt
+      string  _id
+      string  name
+      string  email
+      string  passwordHash
+      string  role           // admin | vendor | customer
+      boolean isVerified
+      date    createdAt
+    }
+
+    SHOP {
+      string  _id
+      string  name
+      string  slug
+      string  ownerId        // USER._id
+      date    createdAt
     }
 
     PRODUCT {
-      string _id
-      string name
-      string description
-      number price
-      string vendorId
-      date   createdAt
+      string  _id
+      number  externalId
+      string  title
+      string  category
+      number  price
+      number  stock
+      number  rating
+      string  availabilityStatus
+      string  ownerId        // USER._id (vendor)
+      string  shopId         // SHOP._id
+      date    createdAt
+    }
+
+    REVIEW {
+      string  _id
+      string  productId      // PRODUCT._id
+      number  rating
+      string  comment
+      string  reviewerName
+      string  reviewerEmail
+      date    createdAt
+    }
+
+    ROLE_REQUEST {
+      string  _id
+      string  userId         // USER._id
+      string  requestedRole  // vendor | admin
+      string  status         // pending | closed
+      string  reviewStatus   // approved | rejected
+      date    reviewDate
     }
 
     ORDER {
-      string _id
-      string userId
-      number totalAmount
-      string status
-      date   createdAt
+      string  _id
+      string  userId         // USER._id
+      number  totalAmount
+      string  status         // pending | paid | cancelled
+      date    createdAt
     }
 
     ORDER_ITEM {
-      string _id
-      string orderId
-      string productId
-      number quantity
-      number unitPrice
+      string  _id
+      string  orderId        // ORDER._id
+      string  productId      // PRODUCT._id
+      number  quantity
+      number  unitPrice
     }
 
     CHAT_MESSAGE {
-      string _id
-      string roomId
-      string senderId
-      string text
-      string productId
-      date   createdAt
+      string  _id
+      string  roomId
+      string  senderId       // USER._id
+      string  text
+      string  productId      // PRODUCT._id (optional)
+      date    createdAt
     }
 
-    USER ||--o{ ORDER : places
-    ORDER ||--o{ ORDER_ITEM : contains
-    USER ||--o{ PRODUCT : "owns (vendor)"
-    USER ||--o{ CHAT_MESSAGE : sends
-    PRODUCT ||--o{ CHAT_MESSAGE : "shared-in"
+    %% --- Relationships ---
+
+    USER      ||--|| SHOP          : "owns (vendor has one shop)"
+    USER      ||--o{ ROLE_REQUEST  : "submits"
+    USER      ||--o{ PRODUCT       : "owns (legacy owner)"
+    SHOP      ||--o{ PRODUCT       : "lists products"
+    PRODUCT   ||--o{ REVIEW        : "has"
+    USER      ||--o{ ORDER         : "places"
+    ORDER     ||--o{ ORDER_ITEM    : "contains"
+    USER      ||--o{ CHAT_MESSAGE  : "sends"
+    PRODUCT   ||--o{ CHAT_MESSAGE  : "shared-in"
 ```
 ---
 
