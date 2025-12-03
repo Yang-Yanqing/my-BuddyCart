@@ -112,7 +112,7 @@ flowchart LR
     CF -->|GET index.html / static assets| S3
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
-    B <-->|WebSocket\n(Socket.IO)| API
+    B <-->|WebSocket / (Socket.IO)| API
 ```
 ---
 
