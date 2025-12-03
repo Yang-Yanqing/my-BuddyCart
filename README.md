@@ -125,7 +125,7 @@ erDiagram
       string  name
       string  email
       string  passwordHash
-      string  role           %% admin | vendor | customer
+      string  role          
       boolean isVerified
       date    createdAt
     }
@@ -134,7 +134,7 @@ erDiagram
       string  _id
       string  name
       string  slug
-      string  ownerId        %% USER._id
+      string  ownerId       
       date    createdAt
     }
 
@@ -147,14 +147,14 @@ erDiagram
       number  stock
       number  rating
       string  availabilityStatus
-      string  ownerId        %% USER._id (vendor)
-      string  shopId         %% SHOP._id
+      string  ownerId        
+      string  shopId        
       date    createdAt
     }
 
     REVIEW {
       string  _id
-      string  productId      %% PRODUCT._id
+      string  productId     
       number  rating
       string  comment
       string  reviewerName
@@ -164,25 +164,25 @@ erDiagram
 
     ROLE_REQUEST {
       string  _id
-      string  userId         %% USER._id
-      string  requestedRole  %% vendor | admin
-      string  status         %% pending | closed
-      string  reviewStatus   %% approved | rejected
+      string  userId         
+      string  requestedRole  
+      string  status         
+      string  reviewStatus  
       date    reviewDate
     }
 
     ORDER {
       string  _id
-      string  userId         %% USER._id
+      string  userId        
       number  totalAmount
-      string  status         // pending | paid | cancelled
+      string  status        
       date    createdAt
     }
 
     ORDER_ITEM {
       string  _id
-      string  orderId        // ORDER._id
-      string  productId      // PRODUCT._id
+      string  orderId        
+      string  productId      
       number  quantity
       number  unitPrice
     }
@@ -190,9 +190,9 @@ erDiagram
     CHAT_MESSAGE {
       string  _id
       string  roomId
-      string  senderId       // USER._id
+      string  senderId       
       string  text
-      string  productId      // PRODUCT._id (optional)
+      string  productId      
       date    createdAt
     }
 
