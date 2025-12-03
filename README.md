@@ -108,7 +108,7 @@ flowchart LR
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
     B <-->|WebSocket\n(Socket.IO)| API
-
+```
 
 
 ## 👨‍💻 Author
