@@ -84,6 +84,33 @@ MongoDB Atlas (Cloud Database)
 
 ---
 
+## 🧱 Architecture Overview
+
+```mermaid
+flowchart LR
+    subgraph Client
+        B[Browser\nReact SPA]
+    end
+
+    subgraph Edge[AWS Edge]
+        CF[CloudFront\nCDN & HTTPS]
+    end
+
+    subgraph App[AWS / Render Layer]
+        API[BuddyCart API\nNode.js + Express 5\nDocker on EC2]
+    end
+
+    subgraph Data[Data Layer]
+        DB[(MongoDB Atlas\nCluster)]
+    end
+
+    B -->|HTTPS| CF
+    CF -->|/api/*| API
+    API -->|MongoDB Driver| DB
+    B <-->|WebSocket\n(Socket.IO)| API
+
+
+
 ## 👨‍💻 Author
 
 **Yang Yanqing (杨彦青)** — Full-Stack Developer  
