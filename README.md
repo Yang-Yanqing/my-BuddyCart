@@ -108,10 +108,9 @@ flowchart LR
     CF -->|/api/*| API
     API -->|MongoDB Driver| DB
     B <-->|WebSocket\n(Socket.IO)| API
-
+```
 ---
 
-```md
 ## 🗄 Data Model (MongoDB Atlas)
 
 ```mermaid
@@ -163,11 +162,9 @@ erDiagram
     USER ||--o{ PRODUCT : "owns (vendor)"
     USER ||--o{ CHAT_MESSAGE : sends
     PRODUCT ||--o{ CHAT_MESSAGE : "shared-in"
-rust
-
+```
 ---
 
-```md
 ## 🔁 Checkout Flow
 
 ```mermaid
@@ -189,8 +186,7 @@ sequenceDiagram
     P->>A: Webhook: success
     A->>DB: Update order status=paid
     A-->>C: (WebSocket) status update
-markdown
-
+```
 ---
 
 ## 👨‍💻 Author
